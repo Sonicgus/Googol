@@ -2,11 +2,17 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+
 import java.io.IOException;
 import java.util.StringTokenizer;
 
 public class App {
     public static void main(String args[]) {
+        if (args.length < 1) {
+            System.out.println("Please provide a URL as a command-line argument.");
+            return;
+        }
+
         String url = args[0];
         try {
             Document doc = Jsoup.connect(url).get();
