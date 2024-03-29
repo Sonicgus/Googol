@@ -4,7 +4,7 @@ import java.net.*;
 import java.util.Queue;
 import java.util.LinkedList;
 
-public class Gateway extends UnicastRemoteObject implements Hello {
+public class Gateway extends UnicastRemoteObject implements GatewayInterface {
     private static final long serialVersionUID = 1L;
 
     // Cria uma fila para armazenar URLs
@@ -19,6 +19,12 @@ public class Gateway extends UnicastRemoteObject implements Hello {
 
         // Adiciona o URL à fila
         urlQueue.add(url);
+
+        return "Received URL: " + url;
+    }
+
+    public String linkInfo(String url) throws RemoteException {
+        System.out.println("Received URL from client: " + url);
 
         return "Received URL: " + url;
     }
