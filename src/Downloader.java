@@ -107,7 +107,7 @@ public class Downloader extends Thread {
     }
 
     private int getRandomNumber() {
-        return (int) (Math.random() * 5) + 1;
+        return (int) (Math.random() * Configuration.NUM_DOWNLOADERS) + 1;
     }
 
     private void handleDownloaderFailure() {
