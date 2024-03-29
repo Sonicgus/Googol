@@ -1,24 +1,28 @@
 import java.rmi.*;
 import java.rmi.server.*;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.*;
-import java.util.Queue;
-import java.util.LinkedList;
+import java.net.UnknownHostException;
 
 public class Gateway extends UnicastRemoteObject implements GatewayInterface {
     private static final long serialVersionUID = 1L;
-
-    // Cria uma fila para armazenar URLs
-    private Queue<String> urlQueue = new LinkedList<>();
 
     public Gateway() throws RemoteException {
         super();
     }
 
-    public String addLink(String url) throws RemoteException {
+    public String addLink(String url) throws UnknownHostException, IOException {
         System.out.println("Received URL from client: " + url);
 
         // Adiciona o URL à fila
-        urlQueue.add(url);
+        Socket socket = new Socket("localhost", Configuration.PORT_B);
+        PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+
+        out.println(url);
+
+        out.close();
+        socket.close();
 
         return "Received URL: " + url;
     }

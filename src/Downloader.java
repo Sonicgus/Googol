@@ -5,15 +5,12 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.util.HashSet;
-import java.util.Queue;
-
-import javax.swing.text.html.HTML;
-
-import java.net.*;
-import java.io.*;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
+
+import java.net.*;
+import java.io.*;
 
 public class Downloader extends Thread {
     private String url;
@@ -22,6 +19,7 @@ public class Downloader extends Thread {
     private String words;
     private String title;
     private String data;
+
     private int ID;
 
     public Downloader(int ID) {

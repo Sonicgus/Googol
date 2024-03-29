@@ -1,8 +1,8 @@
-import java.rmi.Remote;
-import java.rmi.RemoteException;
+import java.io.IOException;
+import java.rmi.*;
 
 public interface GatewayInterface extends Remote {
-    String addLink(String link) throws RemoteException;
+    String addLink(String link) throws UnknownHostException, IOException;
 
     String linkInfo(String link) throws RemoteException;
 
