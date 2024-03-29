@@ -12,7 +12,7 @@ public class UrlQueue {
     public UrlQueue() {
         queue = new LinkedList<>(); // Using LinkedList for the queue implementation
         visited = new HashSet<>(); // Using HashSet for faster membership checking
-        String initialUrl = "http://127.0.0.1:5500/Tests/Test_Site1.html";
+        String initialUrl = "https://www.uc.pt/";
         queue.add(initialUrl); // Add the initial URL to the queue
         visited.add(initialUrl); // Mark the initial URL as visited
     }
@@ -123,4 +123,3 @@ class QueueThread extends Thread {
         }
     }
 }
-

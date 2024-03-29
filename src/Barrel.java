@@ -3,19 +3,21 @@ import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 
-public class Barrel {
-    private static final String MULTICAST_ADDRESS = "230.0.0.0";
-    private static final int MULTICAST_PORT = 4446;
+public class Barrel extends Thread {
+    private int ID;
 
-    @SuppressWarnings("deprecation")
-    public static void main(String[] args) {
+    public Barrel(int ID) {
+        this.ID = ID;
+    }
+
+    public void run() {
         byte[] buf = new byte[256];
         try {
             // Criação do socket de multicast
-            MulticastSocket socket = new MulticastSocket(MULTICAST_PORT);
+            MulticastSocket socket = new MulticastSocket(Configuration.MULTICAST_PORT);
 
             // Junta-se ao grupo de multicast
-            InetAddress group = InetAddress.getByName(MULTICAST_ADDRESS);
+            InetAddress group = InetAddress.getByName(Configuration.MULTICAST_ADDRESS);
             socket.joinGroup(group);
 
             while (true) {

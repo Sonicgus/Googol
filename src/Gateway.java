@@ -45,7 +45,22 @@ public class Gateway extends UnicastRemoteObject implements GatewayInterface {
         return "I dont have barrels to give you the top10";
     }
 
-    public static void main(String args[]) {
+    public static void main(String args[]) throws MalformedURLException {
+
+        try {
+            for (int i = 0; i < Configuration.NUM_BARRELS; i++) {
+                Barrel barrel = new Barrel(i);
+                barrel.start();
+            }
+
+            for (int i = 0; i < Configuration.NUM_DOWNLOADERS; i++) {
+                Downloader downloader = new Downloader(i);
+                downloader.start();
+            }
+        } catch (Exception e) {
+            System.out.println("Exception in main: " + e);
+            e.printStackTrace();
+        }
 
         try {
             Gateway h = new Gateway();
@@ -53,10 +68,7 @@ public class Gateway extends UnicastRemoteObject implements GatewayInterface {
             System.out.println("Hello Server ready.");
         } catch (RemoteException re) {
             System.out.println("Exception in HelloImpl.main: " + re);
-        } catch (MalformedURLException e) {
-            System.out.println("MalformedURLException in HelloImpl.main: " + e);
         }
 
     }
-
 }

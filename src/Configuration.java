@@ -1,6 +1,10 @@
 public class Configuration {
 
     public static boolean AUTOFAIL_DOWNLOADERS = false;
+
+    public static final int NUM_BARRELS = 2;
+    public static final int NUM_DOWNLOADERS = 5;
+
     public static final int PORT_A = 9080;
     public static final int PORT_B = 9081;
 
