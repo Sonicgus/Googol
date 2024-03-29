@@ -13,9 +13,23 @@ public class Client {
     }
 
     public static void main(String args[]) {
+        GatewayInterface g = null;
+        while (true) {
+            try {
+                g = (GatewayInterface) Naming.lookup("rmi://localhost:7000/googol");
+                break;
+            } catch (Exception e) {
+                System.out.println("Gateway não disponivel, a tentar em 5 segundos...");
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e1) {
+                    e1.printStackTrace();
+                }
+            }
+        }
+
         try {
             Scanner scanner = new Scanner(System.in);
-            GatewayInterface g = (GatewayInterface) Naming.lookup("rmi://localhost:7000/googol");
 
             do {
                 menu();
