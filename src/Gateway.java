@@ -1,4 +1,5 @@
 import java.rmi.*;
+import java.rmi.registry.LocateRegistry;
 import java.rmi.server.*;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -45,7 +46,9 @@ public class Gateway extends UnicastRemoteObject implements GatewayInterface {
         return "I dont have barrels to give you the top10";
     }
 
-    public static void main(String args[]) throws MalformedURLException {
+    public static void main(String args[]) throws MalformedURLException, RemoteException {
+
+        LocateRegistry.createRegistry(7000);
 
         try {
             for (int i = 0; i < Configuration.NUM_BARRELS; i++) {
