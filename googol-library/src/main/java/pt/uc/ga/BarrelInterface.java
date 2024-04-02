@@ -1,0 +1,16 @@
+package pt.uc.ga;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.rmi.Remote;
+import java.util.HashSet;
+
+public interface BarrelInterface extends Remote {
+    /**
+     * @param keywords
+     * @return
+     * @throws FileNotFoundException
+     * @throws IOException
+     */
+    HashSet<String> search(HashSet<String> keywords) throws FileNotFoundException, IOException;
+}
