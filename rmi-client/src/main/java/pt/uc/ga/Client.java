@@ -38,6 +38,7 @@ public class Client {
                         System.out.println(g.addLink(url));
                         break;
                     case "2":
+                        int currentPage = 0;
                         System.out.print("Enter the keyword to search: ");
                         HashSet<String> keywords = new HashSet<String>();
                         String[] keywords_splited = scanner.nextLine().split(" ");
@@ -45,7 +46,33 @@ public class Client {
                         for (String keyword : keywords_splited) {
                             keywords.add(keyword);
                         }
-                        System.out.println(g.search(keywords));
+                        System.out.println(g.search(keywords, currentPage));
+                        while (true) {
+                            System.out.println("Press 0 to exit");
+                            System.out.println("For next page press 2 and for previous page press 1");
+                            String option2 = scanner.nextLine();
+                            if (option2.equals("0")) {
+                                break;
+                            } else if (option2.equals("1")) {
+                                if (currentPage > 0) {
+                                    currentPage--;
+                                    System.out.println(g.search(keywords, currentPage));
+                                } else {
+                                    System.out.println("No previous pages");
+                                }
+
+                            } else if (option2.equals("2")) {
+                                if (currentPage < 100) {
+                                    currentPage++;
+                                    System.out.println(g.search(keywords, currentPage));
+                                } else {
+                                    System.out.println("No more pages");
+                                }
+                            } else {
+                                System.out.println("Invalid option");
+                            }
+
+                        }
                         break;
                     case "3":
                         System.out.println("Enter the link to search: ");

@@ -31,7 +31,7 @@ public interface GatewayInterface extends Remote {
      * @throws MalformedURLException
      * @throws NotBoundException
      */
-    String search(HashSet<String> keywords) throws RemoteException, MalformedURLException, NotBoundException;
+    String search(HashSet<String> keywords, int page_number) throws RemoteException, MalformedURLException, NotBoundException;
 
     /**
      * @return

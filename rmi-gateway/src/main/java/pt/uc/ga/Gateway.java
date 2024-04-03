@@ -77,7 +77,7 @@ public class Gateway implements GatewayInterface {
      * @throws NotBoundException
      */
     @Override
-    public String search(HashSet<String> keywords) throws RemoteException {
+    public String search(HashSet<String> keywords, int page_number) throws RemoteException {
         BarrelInterface b;
         try {
             Registry registry = LocateRegistry.getRegistry("localhost", Configuration.RMI_GATEWAY_PORT);
@@ -100,7 +100,7 @@ public class Gateway implements GatewayInterface {
                 searches.put(search, 1L);
             }
 
-            return b.search(keywords, 0);
+            return b.search(keywords, page_number);
         } catch (Exception e) {
             System.out.println("Exception in search: " + e);
             e.printStackTrace();
