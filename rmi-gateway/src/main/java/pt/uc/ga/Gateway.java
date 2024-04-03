@@ -42,9 +42,24 @@ public class Gateway implements GatewayInterface {
      */
     @Override
     public String linkInfo(String url) throws RemoteException {
-        System.out.println("Received URL from client: " + url);
+        BarrelInterface b;
+        try {
+            Registry registry = LocateRegistry.getRegistry("localhost", Configuration.RMI_GATEWAY_PORT);
+            b = (BarrelInterface) registry.lookup("barrel" + 0);
 
-        return "Received URL: " + url;
+        } catch (Exception e) {
+            System.out.println("Exception in search: " + e);
+            e.printStackTrace();
+            return "Falha ao comunicar com barrels";
+        }
+
+        try {
+            return b.linkInfo(url);
+        } catch (Exception e) {
+            System.out.println("Exception in search: " + e);
+            e.printStackTrace();
+            return "Falha ao comunicar com barrels function searchBarrel";
+        }
     }
 
     /**

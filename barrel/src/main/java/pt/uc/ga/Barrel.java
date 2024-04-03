@@ -29,7 +29,7 @@ public class Barrel implements BarrelInterface {
      */
     @Override
     public HashSet<String> search(HashSet<String> keywords) throws FileNotFoundException, IOException {
-        HashSet<String> urls = new HashSet<String>();
+        HashSet<String> urls = new HashSet<>();
 
         for (String keyword : keywords) {
             if (words.containsKey(keyword)) {
@@ -38,6 +38,16 @@ public class Barrel implements BarrelInterface {
         }
 
         return urls;
+    }
+
+    @Override
+    public String linkInfo(String url) throws FileNotFoundException, IOException {
+        if (urls.containsKey(url)) {
+            SiteInfo site = urls.get(url);
+            return "Title: " + site.getTitle() + "\nDescription: " + site.getDescription() + "\nReferenced URLs: "
+                    + site.getUrls();
+        }
+        return null;
     }
 
     /**

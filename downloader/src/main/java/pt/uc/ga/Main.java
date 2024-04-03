@@ -8,8 +8,9 @@ public class Main {
         }
 
         int id = Integer.parseInt(args[0]);
-        Downloader downloader = new Downloader(id); // Create a new instance of the Downloader class
-        new Thread(downloader).start(); // Start the downloader thread
+
+        Downloader downloader = new Downloader(id);
+        downloader.start();
 
     }
 }

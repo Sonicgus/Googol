@@ -13,4 +13,5 @@ public interface BarrelInterface extends Remote {
      * @throws IOException
      */
     HashSet<String> search(HashSet<String> keywords) throws FileNotFoundException, IOException;
+    String linkInfo(String url) throws FileNotFoundException, IOException;
 }
