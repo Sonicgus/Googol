@@ -171,27 +171,27 @@ public class Downloader {
 
     private void sendWords() throws IOException {
         // Constroi a string de dados no formato do protocolo
-        String referencedUrls = "type | url; item_count | " + this.links.size() + "; url | " + this.url
+        String info = "type | url; item_count | " + this.links.size() + "; url | " + this.url
                 + "; referenced_urls | ";
 
         // Adiciona os links de referencia á string de dados
         int linkCount = 0;
         for (String link : this.links) {
             if (linkCount++ == Configuration.MAXIMUM_REFERENCE_LINKS) {
-                referencedUrls += "; "; // Adiciona ponto e vírgula para separar links quando chega ao maximo de links
+                info += "; "; // Adiciona ponto e vírgula para separar links quando chega ao maximo de links
                 break;
             }
 
             if (link == this.links.toArray()[this.links.size() - 1])
-                referencedUrls += link + "; ";
+                info += link + "; ";
                 // se link é igual ao último elemento da lista this.links
             else
-                referencedUrls += link + " "; // Adiciona espaço para separar os links
+                info += link + " "; // Adiciona espaço para separar os links
         }
 
         // Tratar o caso em que não há links referenciados
         if (this.links.isEmpty())
-            referencedUrls += "None; ";
+            info += "None; ";
 
         // Substituir os pontos e vírgulas na string de palavras
         if (this.words == null)
@@ -199,8 +199,8 @@ public class Downloader {
         this.words = this.words.replace(";", " ");
 
         // repara-se a string de dados completa, incluindo título e palavras
-        referencedUrls += "title | " + this.title + "; " + "words | " + this.words;
-        this.data = referencedUrls;
+        info += "title | " + this.title + "; " + "words | " + this.words;
+        this.data = info;
 
         // Obtém o endereço IP do grupo multicast ao qual os dados serão enviados.
         InetAddress group = InetAddress.getByName(Configuration.MULTICAST_ADDRESS);
@@ -280,6 +280,7 @@ public class Downloader {
         this.title = this.title.replace("|", "");
         this.title = this.title.replace(";", "");
         this.title = this.title.replace("\n", "");
+        this.description = doc.select("meta[name=description]").attr("content");
 
         String[] words = doc.text().split(" ");
         // A função text() retorna todo o texto contido na página HTML,excluindo as tags
@@ -314,6 +315,7 @@ public class Downloader {
             System.err.println("Failed to send URL to queue");
         }
     }
+
 
     private String getUrl() throws InterruptedException {
         while (true) {
