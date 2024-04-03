@@ -48,8 +48,7 @@ public class Client {
                         }
                         System.out.println(g.search(keywords, currentPage));
                         while (true) {
-                            System.out.println("Press 0 to exit");
-                            System.out.println("For next page press 2 and for previous page press 1");
+                            System.out.println("Previous page: 1, Next page: 2, Exit: 0");
                             String option2 = scanner.nextLine();
                             if (option2.equals("0")) {
                                 break;

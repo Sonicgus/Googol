@@ -9,12 +9,13 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
+import java.util.List;
 
 public class Barrel implements BarrelInterface {
     private final int id;
     private final HashMap<String, HashSet<String>> words; // word -> urls
     private final HashMap<String, SiteInfo> urls; // url -> link_info
+    private final SiteInfoComparator comparator = new SiteInfoComparator();
 
 
     public Barrel(int id) {
@@ -28,48 +29,50 @@ public class Barrel implements BarrelInterface {
      */
     @Override
     public String search(HashSet<String> keywords, int page_number) throws FileNotFoundException, IOException {
-
         //measure time of search
         long startTime = System.currentTimeMillis();
-        LinkedList<SiteInfo> urls = new LinkedList<>();
+        HashSet<SiteInfo> urlss = new HashSet<>();
         for (String keyword : keywords) {
             if (words.containsKey(keyword)) {
+
                 for (String url : words.get(keyword)) {
-                    urls.add(this.urls.get(url));
+                    if (urls.containsKey(url)) {
+                        // if not in urlss the add
+                        if (!urlss.contains(urls.get(url))) {
+                            urlss.add(urls.get(url));
+                        }
+
+                    }
                 }
             }
+        }
+
+        int numresults = urlss.size();
+        int numtoremove = page_number * 10;
+
+        List<SiteInfo> lista = urlss.stream().sorted(comparator).skip(numtoremove).limit(10).toList();
+
+
+        if (lista.isEmpty()) {
+            return "No results found";
+        }
+
+
+        String response = "Search results:\n";
+
+
+        for (SiteInfo site : lista) {
+            response += "URL:" + site.getUrl() + "\nTitle:" + site.getTitle() + "\nDescription:" + site.getDescription() + "\nNumber of URLs pointing to this URL:" + site.getNumUrls() + "\n\n";
         }
 
         long endTime = System.currentTimeMillis();
         long timeElapsed = endTime - startTime;
-
-
-        if (urls.isEmpty()) {
-            return "No results found";
+        int var = numresults / 10 + 1;
+        if (numresults % 10 == 0) {
+            var--;
         }
 
-        LinkedList<SiteInfo> urlsToSend10 = new LinkedList<>();
-
-        //for cycle that finds the max and adds to the urlsToSend10
-        //does 10 times
-        //sort by order the one who has more in getNumUrls() is appended to the urlsToSend10
-
-        for (int i = 0; i < 10 && i < urls.size(); i++) {
-            SiteInfo max = urls.get(0);
-            for (SiteInfo site : urls) {
-                if (site.getNumUrls() > max.getNumUrls()) {
-                    max = site;
-                }
-            }
-            urlsToSend10.add(max);
-            urls.remove(max);
-        }
-        String response = "Results for page " + page_number + "/" + +urls.size() / 10 + "Number of results: " + urls.size() + "timeElapsed:" + timeElapsed + "\n\n";
-
-        for (SiteInfo site : urlsToSend10) {
-            response += "Title: " + site.getTitle() + "\nDescription: " + site.getDescription() + "\nURL: "
-                    + site.getUrl() + "\n\n";
-        }
+        response += "Page " + (page_number + 1) + "/" + var + " Number of results: " + numresults + " TimeElapsed:" + timeElapsed + "ms";
 
         return response;
 
@@ -132,6 +135,7 @@ public class Barrel implements BarrelInterface {
 
             if (dici.containsKey("words")) {
                 String[] wordss = dici.get("words").split(" ");
+
                 for (String word : wordss) {
                     if (words.containsKey(word)) {
                         words.get(word).add(site.getUrl());
@@ -142,6 +146,7 @@ public class Barrel implements BarrelInterface {
                     }
                 }
             }
+
             if (urls.containsKey(dici.get("url"))) {
                 //if already exists update with title, description
                 urls.get(dici.get("url")).setTitle(site.getTitle());
