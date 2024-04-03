@@ -9,9 +9,16 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.HashMap;
 import java.util.HashSet;
 
 public class Gateway implements GatewayInterface {
+    private final HashMap<String, Long> searches;
+
+    public Gateway() {
+        this.searches = new HashMap<>();
+    }
+
 
     /**
      * @param url
@@ -48,7 +55,7 @@ public class Gateway implements GatewayInterface {
             b = (BarrelInterface) registry.lookup("barrel" + 0);
 
         } catch (Exception e) {
-            System.out.println("Exception in search: " + e);
+            System.out.println("Exception in linkInfo: " + e);
             e.printStackTrace();
             return "Falha ao comunicar com barrels";
         }
@@ -56,9 +63,9 @@ public class Gateway implements GatewayInterface {
         try {
             return b.linkInfo(url);
         } catch (Exception e) {
-            System.out.println("Exception in search: " + e);
+            System.out.println("Exception in linkInfo: " + e);
             e.printStackTrace();
-            return "Falha ao comunicar com barrels function searchBarrel";
+            return "Falha ao comunicar com barrels function linkInfo";
         }
     }
 
@@ -83,6 +90,16 @@ public class Gateway implements GatewayInterface {
         }
 
         try {
+            String search = "";
+            for (String keyword : keywords) {
+                search += keyword + " ";
+            }
+            if (searches.containsKey(search)) {
+                searches.put(search, searches.get(search) + 1);
+            } else {
+                searches.put(search, 1L);
+            }
+
             return b.search(keywords, 0);
         } catch (Exception e) {
             System.out.println("Exception in search: " + e);
@@ -97,9 +114,26 @@ public class Gateway implements GatewayInterface {
      * @throws RemoteException
      */
     @Override
-    public String top10() throws RemoteException {
-        System.out.println("Bruh the client wants to see the top10: ");
-
-        return "I dont have barrels to give you the top10";
+    public String getTop10() throws RemoteException {
+        HashMap<String, Long> copysearches = new HashMap<>(searches);
+        String response = "Top 10 searches\n";
+        //add all searches to searchss
+        //and than add to response the top 10
+        for (int i = 0; i < 10 && i < searches.size(); i++) {
+            String max = "";
+            long maxvalue = 0;
+            for (String search : copysearches.keySet()) {
+                if (copysearches.get(search) > maxvalue) {
+                    max = search;
+                    maxvalue = copysearches.get(search);
+                }
+            }
+            response += "Search: " + max + " Number of searches: " + maxvalue + "\n";
+            copysearches.remove(max);
+        }
+        if (response.equals("Top 10 searches\n")) {
+            return "No searches made";
+        }
+        return response;
     }
 }

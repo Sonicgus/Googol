@@ -37,5 +37,5 @@ public interface GatewayInterface extends Remote {
      * @return
      * @throws RemoteException
      */
-    String top10() throws RemoteException;
+    String getTop10() throws RemoteException;
 }

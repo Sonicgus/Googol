@@ -53,7 +53,7 @@ public class Client {
                         System.out.println(g.linkInfo(link));
                         break;
                     case "4":
-                        System.out.println(g.top10());
+                        System.out.println(g.getTop10());
                         break;
                     case "0":
                         System.out.println("Exiting...");

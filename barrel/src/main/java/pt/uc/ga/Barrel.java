@@ -16,6 +16,7 @@ public class Barrel implements BarrelInterface {
     private final HashMap<String, HashSet<String>> words; // word -> urls
     private final HashMap<String, SiteInfo> urls; // url -> link_info
 
+
     public Barrel(int id) {
         this.id = id;
         this.words = new HashMap<>();
@@ -27,6 +28,7 @@ public class Barrel implements BarrelInterface {
      */
     @Override
     public String search(HashSet<String> keywords, int page_number) throws FileNotFoundException, IOException {
+
         //measure time of search
         long startTime = System.currentTimeMillis();
         LinkedList<SiteInfo> urls = new LinkedList<>();
@@ -84,6 +86,7 @@ public class Barrel implements BarrelInterface {
 
         return "URL not found";
     }
+
 
     /**
      * @param info

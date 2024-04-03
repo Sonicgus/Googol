@@ -5,7 +5,6 @@ import java.util.HashSet;
 public class SiteInfo implements java.io.Serializable {
 
     private static final long serialVersionUID = 1L;
-    private int searchCount;
 
     private String title;
     private String description;
@@ -19,7 +18,6 @@ public class SiteInfo implements java.io.Serializable {
         this.title = "";
         this.description = "";
         this.urls = new HashSet<>();
-        this.searchCount = 0;
     }
 
 
@@ -46,9 +44,6 @@ public class SiteInfo implements java.io.Serializable {
     public String getUrl() {
         return url;
     }
-    public int getSearchCount() {
-        return searchCount;
-    }
 
     public void setDescription(String description) {
         this.description = description;
@@ -58,7 +53,4 @@ public class SiteInfo implements java.io.Serializable {
         return urls;
     }
 
-    public void addSearchCount() {
-        this.searchCount++;
-    }
 }
