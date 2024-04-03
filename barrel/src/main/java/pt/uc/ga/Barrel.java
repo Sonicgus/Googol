@@ -115,10 +115,11 @@ public class Barrel implements BarrelInterface {
                 String[] urlss = dici.get("referenced_urls").split(" ");
                 for (String url : urlss) {
                     if (urls.containsKey(url)) {
-                        urls.get(url).getUrls().add(dici.get("url"));
+                        urls.get(url).getUrls().add(site.getUrl());
                     } else {
                         SiteInfo siteaux = new SiteInfo();
-                        siteaux.getUrls().add(dici.get("url"));
+                        siteaux.setUrl(url);
+                        siteaux.getUrls().add(site.getUrl());
                         urls.put(url, siteaux);
                     }
                 }
