@@ -12,7 +12,8 @@ public class Main {
 
         try {
             Gateway g = new Gateway();
-            GatewayInterface stub = (GatewayInterface) UnicastRemoteObject.exportObject((Gateway) g, 0);
+            System.setProperty("java.rmi.server.hostname", "localhost");
+            GatewayInterface stub = (GatewayInterface) UnicastRemoteObject.exportObject(g, 0);
             Registry registry = LocateRegistry.createRegistry(Configuration.RMI_GATEWAY_PORT);
             registry.rebind("googol", stub);
             System.out.println("Gateway Server ready.");

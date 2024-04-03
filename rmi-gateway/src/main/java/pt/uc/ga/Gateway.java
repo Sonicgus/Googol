@@ -51,7 +51,7 @@ public class Gateway implements GatewayInterface {
     public String linkInfo(String url) throws RemoteException {
         BarrelInterface b;
         try {
-            Registry registry = LocateRegistry.getRegistry("localhost", Configuration.RMI_GATEWAY_PORT);
+            Registry registry = LocateRegistry.getRegistry(Configuration.RMI_HOST, Configuration.RMI_GATEWAY_PORT);
             b = (BarrelInterface) registry.lookup("barrel" + 0);
 
         } catch (Exception e) {
@@ -80,7 +80,7 @@ public class Gateway implements GatewayInterface {
     public String search(HashSet<String> keywords, int page_number) throws RemoteException {
         BarrelInterface b;
         try {
-            Registry registry = LocateRegistry.getRegistry("localhost", Configuration.RMI_GATEWAY_PORT);
+            Registry registry = LocateRegistry.getRegistry(Configuration.RMI_HOST, Configuration.RMI_GATEWAY_PORT);
             b = (BarrelInterface) registry.lookup("barrel" + 0);
 
         } catch (Exception e) {

@@ -11,7 +11,7 @@ public class Client {
         GatewayInterface g = null;
         while (true) {
             try {
-                Registry registry = LocateRegistry.getRegistry("localhost", Configuration.RMI_GATEWAY_PORT);
+                Registry registry = LocateRegistry.getRegistry(Configuration.RMI_HOST, Configuration.RMI_GATEWAY_PORT);
                 g = (GatewayInterface) registry.lookup("googol");
                 break;
             } catch (Exception e) {
@@ -97,7 +97,7 @@ public class Client {
             e.printStackTrace();
             while (true) {
                 try {
-                    Registry registry = LocateRegistry.getRegistry("localhost", Configuration.RMI_GATEWAY_PORT);
+                    Registry registry = LocateRegistry.getRegistry(Configuration.RMI_HOST, Configuration.RMI_GATEWAY_PORT);
                     g = (GatewayInterface) registry.lookup("googol");
                     break;
                 } catch (Exception ex) {

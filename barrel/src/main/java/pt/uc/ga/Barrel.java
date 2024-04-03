@@ -106,7 +106,9 @@ public class Barrel implements BarrelInterface {
 
         for (String part : parts) {
             String[] key_value_pair = part.split("\\|");
-            dici.put(key_value_pair[0].trim(), key_value_pair[1].trim());
+            if (key_value_pair.length == 2) {
+                dici.put(key_value_pair[0].trim(), key_value_pair[1].trim());
+            }
         }
 
         if (dici.get("type").equals("url") && dici.containsKey("url")) {
@@ -161,7 +163,8 @@ public class Barrel implements BarrelInterface {
     public void start() {
         try {
             BarrelInterface stub = (BarrelInterface) UnicastRemoteObject.exportObject(this, 0);
-            Registry registry = LocateRegistry.getRegistry("localhost", Configuration.RMI_GATEWAY_PORT);
+            Registry registry = LocateRegistry.getRegistry(Configuration.RMI_HOST, Configuration.RMI_GATEWAY_PORT);
+
             registry.rebind("barrel" + id, stub);
         } catch (RemoteException e) {
             throw new RuntimeException(e);
