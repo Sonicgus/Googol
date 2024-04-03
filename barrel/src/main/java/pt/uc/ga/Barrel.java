@@ -50,15 +50,15 @@ public class Barrel implements BarrelInterface {
     }
 
     /**
-     * @param url
+     * @param info
      */
-    private void parser(String url) {
+    private void parser(String info) {
         // chave1 | valor1; chave2 | valor2
         // exemplo:
         // type | words_list; item_count | 2; item_0 | banana; item_1 | fixe;
         // type | url_list; item_count | 2; item_0 | www.uc.pt; item_1 | www.google.com;
         // type | link_info; url | www.uc.pt; title | DEI; description | DEI é fixe;
-        String[] parts = url.split(";");
+        String[] parts = info.split(";");
 
         HashMap<String, String> dici = new HashMap<String, String>();
 
@@ -67,31 +67,50 @@ public class Barrel implements BarrelInterface {
             dici.put(key_value_pair[0].trim(), key_value_pair[1].trim());
         }
 
-        if (dici.get("type").equals("url")) {
+        if (dici.get("type").equals("url") && dici.containsKey("url")) {
             SiteInfo site = new SiteInfo();
 
-            site.setTitle(dici.get("title"));
-            site.setDescription(dici.get("description"));
+            site.setUrl(dici.get("url"));
 
-            String[] urlss = dici.get("referenced_urls").split(" ");
-            for (String u : urlss) {
-                site.getUrls().add(u);
-            }
+            if (dici.containsKey("title"))
+                site.setTitle(dici.get("title"));
+            if (dici.containsKey("description"))
+                site.setDescription(dici.get("description"));
 
-            String[] wordss = dici.get("words").split(" ");
-            for (String word : wordss) {
-                System.out.println(word);
-                if (words.containsKey(word)) {
-                    words.get(word).add(dici.get("url"));
-                } else {
-                    HashSet<String> urlsaux = new HashSet<String>();
-                    urlsaux.add(dici.get("url"));
-                    words.put(word, urlsaux);
+            if (dici.containsKey("referenced_urls")) {
+                String[] urlss = dici.get("referenced_urls").split(" ");
+                for (String url : urlss) {
+                    if (urls.containsKey(url)) {
+                        urls.get(url).getUrls().add(dici.get("url"));
+                    } else {
+                        SiteInfo siteaux = new SiteInfo();
+                        siteaux.getUrls().add(dici.get("url"));
+                        urls.put(url, siteaux);
+                    }
                 }
             }
-            urls.put(dici.get("url"), site);
-        }
 
+            if (dici.containsKey("words")) {
+                String[] wordss = dici.get("words").split(" ");
+                for (String word : wordss) {
+                    if (words.containsKey(word)) {
+                        words.get(word).add(site.getUrl());
+                    } else {
+                        HashSet<String> urlsaux = new HashSet<String>();
+                        urlsaux.add(site.getUrl());
+                        words.put(word, urlsaux);
+                    }
+                }
+            }
+            if (urls.containsKey(dici.get("url"))) {
+                //if already exists update with title, description
+                urls.get(dici.get("url")).setTitle(site.getTitle());
+                urls.get(dici.get("url")).setDescription(site.getDescription());
+            } else {
+                urls.put(site.getUrl(), site);
+            }
+
+        }
     }
 
     public void start() {
