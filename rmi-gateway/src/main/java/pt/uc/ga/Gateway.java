@@ -83,12 +83,7 @@ public class Gateway implements GatewayInterface {
         }
 
         try {
-            HashSet<String> urls = b.search(keywords);
-            String result = "Search results: ";
-            for (String url : urls) {
-                result += url + " ";
-            }
-            return result;
+            return b.search(keywords, 0);
         } catch (Exception e) {
             System.out.println("Exception in search: " + e);
             e.printStackTrace();

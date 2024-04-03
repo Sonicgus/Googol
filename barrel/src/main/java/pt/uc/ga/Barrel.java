@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 public class Barrel implements BarrelInterface {
-    private int id;
+    private final int id;
     private final HashMap<String, HashSet<String>> words; // word -> urls
     private final HashMap<String, SiteInfo> urls; // url -> link_info
 
@@ -22,18 +22,17 @@ public class Barrel implements BarrelInterface {
     }
 
     /**
-     * @param keywords
-     * @return
-     * @throws FileNotFoundException
-     * @throws IOException
+     *
      */
     @Override
-    public HashSet<String> search(HashSet<String> keywords) throws FileNotFoundException, IOException {
-        HashSet<String> urls = new HashSet<>();
+    public String search(HashSet<String> keywords, int page_number) throws FileNotFoundException, IOException {
+        String urls = "Results for page " + page_number + ":\n";
 
         for (String keyword : keywords) {
             if (words.containsKey(keyword)) {
-                urls.addAll(words.get(keyword));
+                for (String url : words.get(keyword)) {
+                    urls += url + "\n";
+                }
             }
         }
 
@@ -73,7 +72,6 @@ public class Barrel implements BarrelInterface {
 
             site.setTitle(dici.get("title"));
             site.setDescription(dici.get("description"));
-
 
             String[] urlss = dici.get("referenced_urls").split(" ");
             for (String u : urlss) {
