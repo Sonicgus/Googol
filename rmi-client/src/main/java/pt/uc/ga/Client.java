@@ -93,5 +93,6 @@ public class Client {
         System.out.println("3. Consultar lista de páginas com ligação para uma página específica");
         System.out.println("4. Página de administração atualizada em tempo real");
         System.out.println("0. Sair");
+        System.out.print("Escolha:");
     }
 }

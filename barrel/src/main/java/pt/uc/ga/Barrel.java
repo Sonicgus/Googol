@@ -77,10 +77,12 @@ public class Barrel implements BarrelInterface {
     public String linkInfo(String url) throws FileNotFoundException, IOException {
         if (urls.containsKey(url)) {
             SiteInfo site = urls.get(url);
-            return "Title: " + site.getTitle() + "\nDescription: " + site.getDescription() + "\nReferenced URLs: "
+            return "Number of URLs pointing to this URL:" + site.getUrls().size() + "\nTitle:"
+                    + site.getTitle() + "\nDescription:" + site.getDescription() + "\nURLs Pointing to this URL:"
                     + site.getUrls();
         }
-        return null;
+
+        return "URL not found";
     }
 
     /**
