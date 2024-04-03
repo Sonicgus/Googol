@@ -19,7 +19,6 @@ public class SiteInfo implements java.io.Serializable {
         this.title = "";
         this.description = "";
         this.urls = new HashSet<>();
-        this.numUrls = 0;
         this.searchCount = 0;
     }
 
@@ -29,7 +28,7 @@ public class SiteInfo implements java.io.Serializable {
     }
 
     public int getNumUrls() {
-        return numUrls;
+        return urls.size();
     }
 
     public void setTitle(String title) {
@@ -59,10 +58,6 @@ public class SiteInfo implements java.io.Serializable {
         return urls;
     }
 
-    public void setUrls(HashSet<String> urls) {
-        this.urls = urls;
-        this.numUrls = urls.size();
-    }
     public void addSearchCount() {
         this.searchCount++;
     }

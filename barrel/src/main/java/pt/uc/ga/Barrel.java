@@ -9,6 +9,7 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 
 public class Barrel implements BarrelInterface {
     private final int id;
@@ -26,17 +27,50 @@ public class Barrel implements BarrelInterface {
      */
     @Override
     public String search(HashSet<String> keywords, int page_number) throws FileNotFoundException, IOException {
-        String urls = "Results for page " + page_number + ":\n";
-
+        //measure time of search
+        long startTime = System.currentTimeMillis();
+        LinkedList<SiteInfo> urls = new LinkedList<>();
         for (String keyword : keywords) {
             if (words.containsKey(keyword)) {
                 for (String url : words.get(keyword)) {
-                    urls += url + "\n";
+                    urls.add(this.urls.get(url));
                 }
             }
         }
 
-        return urls;
+        long endTime = System.currentTimeMillis();
+        long timeElapsed = endTime - startTime;
+
+
+        if (urls.isEmpty()) {
+            return "No results found";
+        }
+
+        LinkedList<SiteInfo> urlsToSend10 = new LinkedList<>();
+
+        //for cycle that finds the max and adds to the urlsToSend10
+        //does 10 times
+        //sort by order the one who has more in getNumUrls() is appended to the urlsToSend10
+
+        for (int i = 0; i < 10 && i < urls.size(); i++) {
+            SiteInfo max = urls.get(0);
+            for (SiteInfo site : urls) {
+                if (site.getNumUrls() > max.getNumUrls()) {
+                    max = site;
+                }
+            }
+            urlsToSend10.add(max);
+            urls.remove(max);
+        }
+        String response = "Results for page " + page_number + "/" + +urls.size() / 10 + "Number of results: " + urls.size() + "timeElapsed:" + timeElapsed + "\n\n";
+
+        for (SiteInfo site : urlsToSend10) {
+            response += "Title: " + site.getTitle() + "\nDescription: " + site.getDescription() + "\nURL: "
+                    + site.getUrl() + "\n\n";
+        }
+
+        return response;
+
     }
 
     @Override

@@ -38,7 +38,7 @@ public class Client {
                         System.out.println(g.addLink(url));
                         break;
                     case "2":
-                        System.out.println("Enter the keyword to search: ");
+                        System.out.print("Enter the keyword to search: ");
                         HashSet<String> keywords = new HashSet<String>();
                         String[] keywords_splited = scanner.nextLine().split(" ");
 
