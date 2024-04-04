@@ -26,18 +26,17 @@ public class Client {
 
         try {
             Scanner scanner = new Scanner(System.in);
-
             do {
                 menu();
-                String option = scanner.nextLine();
+                char option = scanner.nextLine().charAt(0);
 
                 switch (option) {
-                    case "1":
+                    case '1':
                         System.out.println("Enter the URL to index: ");
                         String url = scanner.nextLine();
                         System.out.println(g.addLink(url));
                         break;
-                    case "2":
+                    case '2':
                         int currentPage = 0;
                         System.out.print("Enter the keyword to search: ");
                         HashSet<String> keywords = new HashSet<String>();
@@ -48,7 +47,7 @@ public class Client {
                         }
                         System.out.println(g.search(keywords, currentPage));
                         while (true) {
-                            System.out.println("Previous page: 1, Next page: 2, Exit: 0");
+                            System.out.println("Previous page: 1, Next page: 2, Exit: 0, Refresh Page: Enter");
                             String option2 = scanner.nextLine();
                             if (option2.equals("0")) {
                                 break;
@@ -61,27 +60,30 @@ public class Client {
                                 }
 
                             } else if (option2.equals("2")) {
-                                if (currentPage < 100) {
-                                    currentPage++;
-                                    System.out.println(g.search(keywords, currentPage));
-                                } else {
-                                    System.out.println("No more pages");
+                                currentPage++;
+                                String result = g.search(keywords, currentPage);
+                                System.out.println(result);
+                                if (result.equals("No results found") && currentPage > 0) {
+                                    currentPage--;
                                 }
+
+                            } else if (option2.equals("")) {
+                                System.out.println(g.search(keywords, currentPage));
                             } else {
                                 System.out.println("Invalid option");
                             }
 
                         }
                         break;
-                    case "3":
+                    case '3':
                         System.out.println("Enter the link to search: ");
                         String link = scanner.nextLine();
                         System.out.println(g.linkInfo(link));
                         break;
-                    case "4":
+                    case '4':
                         System.out.println(g.getTop10());
                         break;
-                    case "0":
+                    case '0':
                         System.out.println("Exiting...");
                         System.exit(0);
                         scanner.close();

@@ -3,7 +3,6 @@ package pt.uc.ga;
 public class Configuration {
     public static boolean AUTOFAIL_DOWNLOADERS = false;
 
-    public static final int NUM_BARRELS = 2;
     public static final int NUM_DOWNLOADERS = 5;
 
     public static final String RMI_HOST = "localhost";

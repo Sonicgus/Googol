@@ -51,8 +51,7 @@ public class Gateway implements GatewayInterface {
     public String linkInfo(String url) throws RemoteException {
         BarrelInterface b;
         try {
-            Registry registry = LocateRegistry.getRegistry(Configuration.RMI_HOST, Configuration.RMI_GATEWAY_PORT);
-            b = (BarrelInterface) registry.lookup("barrel" + 0);
+            b = getRandomBarrel();
 
         } catch (Exception e) {
             System.out.println("Exception in linkInfo: " + e);
@@ -80,8 +79,7 @@ public class Gateway implements GatewayInterface {
     public String search(HashSet<String> keywords, int page_number) throws RemoteException {
         BarrelInterface b;
         try {
-            Registry registry = LocateRegistry.getRegistry(Configuration.RMI_HOST, Configuration.RMI_GATEWAY_PORT);
-            b = (BarrelInterface) registry.lookup("barrel" + 0);
+            b = getRandomBarrel();
 
         } catch (Exception e) {
             System.out.println("Exception in search: " + e);
@@ -107,6 +105,28 @@ public class Gateway implements GatewayInterface {
             return "Falha ao comunicar com barrels function searchBarrel";
         }
 
+    }
+
+    public BarrelInterface getRandomBarrel() {
+        while (true) {
+            try {
+                Registry registry = LocateRegistry.getRegistry(Configuration.RMI_HOST, Configuration.RMI_GATEWAY_PORT);
+                //get barrels list. all start with "barrel"
+                String[] list = registry.list();
+                //only get Strings starting with the word barrel
+                HashSet<String> barrelsList = new HashSet<>();
+                for (String s : list) {
+                    if (s.startsWith("barrel")) {
+                        barrelsList.add(s);
+                    }
+                }
+                //get a random barrel
+                String randomBarrel = (String) barrelsList.toArray()[(int) (Math.random() * barrelsList.size())];
+                return (BarrelInterface) registry.lookup(randomBarrel);
+            } catch (RemoteException | NotBoundException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     /**
