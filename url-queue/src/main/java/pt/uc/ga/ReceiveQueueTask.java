@@ -11,15 +11,15 @@ public class ReceiveQueueTask implements Runnable {
         this.port = port;
         this.urlQueue = urlQueue;
         try {
-            serverSocket = new ServerSocket(port); // Create a server socket for the specified port
-        } catch (IOException e) { // Catch any IO exceptions that may occur
-            e.printStackTrace(); // Print the stack trace if an exception occurs
+            serverSocket = new ServerSocket(port);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
-    private ServerSocket serverSocket; // Server socket for communication
-    private int port; // Port number for the server socket
-    private UrlQueue urlQueue; // Reference to the shared UrlQueue instance
+    private ServerSocket serverSocket;
+    private int port;
+    private UrlQueue urlQueue;
 
     @Override
     public void run() {
@@ -33,21 +33,17 @@ public class ReceiveQueueTask implements Runnable {
     }
 
     private void receiveUrl() throws IOException {
-        try (Socket socket = serverSocket.accept(); // Accept a connection from a client
+        try (Socket socket = serverSocket.accept();
              BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))) { // Create a
-            // BufferedReader
-            // for reading
-            // from the
-            // client
-            String url; // Variable to store the received URL
-            boolean resend = false; // Flag to indicate if the URL needs to be resent
-            while ((url = in.readLine()) != null) { // Read URLs from the client until no more data is available
-                if (url.startsWith("[RESEND]")) { // If the received URL is marked for resend
-                    url = url.substring(8); // Remove the resend marker
-                    System.out.println("[RE-ADDED]: " + url); // Print that the URL is being re-added
-                    resend = true; // Set the resend flag to true
+            String url;
+            boolean resend = false;
+            while ((url = in.readLine()) != null) {
+                if (url.startsWith("[RESEND]")) {
+                    url = url.substring(8);
+                    System.out.println("[RE-ADDED]: " + url);
+                    resend = true;
                 }
-                urlQueue.addUrl(url, resend); // Add the URL to the queue
+                urlQueue.addUrl(url, resend);
 
             }
         }

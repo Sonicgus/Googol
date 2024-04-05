@@ -10,15 +10,15 @@ public class SendQueueTask implements Runnable {
         this.port = port;
         this.urlQueue = urlQueue;
         try {
-            serverSocket = new ServerSocket(port); // Create a server socket for the specified port
-        } catch (IOException e) { // Catch any IO exceptions that may occur
-            e.printStackTrace(); // Print the stack trace if an exception occurs
+            serverSocket = new ServerSocket(port);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
-    private ServerSocket serverSocket; // Server socket for communication
-    private int port; // Port number for the server socket
-    private UrlQueue urlQueue; // Reference to the shared UrlQueue instance
+    private ServerSocket serverSocket;
+    private int port;
+    private UrlQueue urlQueue;
 
     @Override
     public void run() {
@@ -33,14 +33,14 @@ public class SendQueueTask implements Runnable {
 
     private void sendUrl() throws IOException {
         String url;
-        url = urlQueue.getUrl(); // Get a URL from the queue
+        url = urlQueue.getUrl();
 
-        if (url != null) { // If a URL is obtained
-            try (Socket socket = serverSocket.accept(); // Accept a connection from a client
-                 PrintWriter out = new PrintWriter(socket.getOutputStream(), true)) { // Create a PrintWriter for
-                // writing to the client
-                out.println(url); // Send the URL to the client
-                System.out.println("Sent url: " + url); // Print the sent URL
+        if (url != null) {
+            try (Socket socket = serverSocket.accept();
+                 PrintWriter out = new PrintWriter(socket.getOutputStream(), true)) {
+
+                out.println(url);
+                System.out.println("Sent url: " + url);
             }
         }
     }

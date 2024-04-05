@@ -5,46 +5,47 @@ import java.util.LinkedList;
 import java.util.Set;
 
 public class UrlQueue {
-    private LinkedList<String> queue; // Queue to store URLs to be processed
-    private Set<String> visited; // Set to keep track of visited URLs
+    private LinkedList<String> queue;
+    private Set<String> visited;
 
+    /**
+     * Constructor for the UrlQueue class
+     */
     public UrlQueue() {
-        queue = new LinkedList<>(); // Using LinkedList for the queue implementation
-        visited = new HashSet<>(); // Using HashSet for faster membership checking
+        queue = new LinkedList<>();
+        visited = new HashSet<>();
         String initialUrl = "https://www.uc.pt/";
-        queue.add(initialUrl); // Add the initial URL to the queue
-        visited.add(initialUrl); // Mark the initial URL as visited
+        addUrl(initialUrl, false);
     }
 
+    /**
+     * Start the URL queue
+     */
     public void start() {
-        // Create and start two QueueThread instances, one for sending and one for
-        // receiving
         SendQueueTask queueSend = new SendQueueTask(Configuration.PORT_A, this);
         ReceiveQueueTask queueReceive = new ReceiveQueueTask(Configuration.PORT_B, this);
-        new Thread(queueSend).start(); // Start the sending thread
-        new Thread(queueReceive).start(); // Start the receiving thread
+        new Thread(queueSend).start();
+        new Thread(queueReceive).start();
     }
 
-    // Method to add a URL to the queue
+    /**
+     * Add a URL to the queue
+     *
+     * @param url
+     * @param resend
+     */
     public synchronized void addUrl(String url, boolean resend) {
-        // If not a resend and the URL is already visited, return without adding
         if (!resend && visited.contains(url))
             return;
 
-        System.out.println("Added url: " + url); // Print the added URL
-        queue.add(url); // Add the URL to the queue
-        visited.add(url); // Mark the URL as visited
+        System.out.println("Added url: " + url);
+        queue.add(url);
+        visited.add(url);
     }
 
-    // Method to get a URL from the queue
+
     public synchronized String getUrl() {
-        return queue.poll(); // Remove and return the first URL in the queue
+        return queue.poll();
     }
 
-    // Method to print the contents of the queue (for debugging)
-    public void printQueue() {
-        for (String url : queue) {
-            System.out.println(url);
-        }
-    }
 }
