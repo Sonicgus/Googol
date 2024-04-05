@@ -178,6 +178,7 @@ public class Downloader {
         if (this.words == null)
             this.words = "None";
         this.words = this.words.replace(";", " ");
+        this.words = removeIlegalCharacters(this.words);
 
         // repara-se a string de dados completa, incluindo título e palavras
         info += "title | " + this.title + "; " + "words | " + this.words;
