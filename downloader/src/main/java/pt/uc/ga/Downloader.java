@@ -81,7 +81,6 @@ public class Downloader {
                 }
 
                 sendWords();
-                sendUrl();
                 sendLinkToQueue(false);
 
             } catch (Exception e) {
@@ -91,23 +90,6 @@ public class Downloader {
         }
     }
 
-    private void sendUrl() {
-        try {
-            InetAddress group = InetAddress.getByName(Configuration.MULTICAST_ADDRESS);
-            MulticastSocket socket = new MulticastSocket(Configuration.MULTICAST_PORT);
-
-            String urlString = "type | url; item_count | 1; url | " + this.url + "; title | " + this.title
-                    + "; description | " + this.description;
-
-            byte[] buffer = urlString.getBytes();
-
-            DatagramPacket packet = new DatagramPacket(buffer, buffer.length, group, Configuration.MULTICAST_PORT);
-            socket.send(packet);
-            socket.close();
-        } catch (IOException e) {
-            handleSendUrlError();
-        }
-    }
 
     private void handleSendUrlError() {
         System.err.println("Failed to send URL to admin for Downloader[" + this.id + "]");
