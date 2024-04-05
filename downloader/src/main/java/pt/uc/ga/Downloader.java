@@ -15,7 +15,6 @@ import java.util.HashSet;
 public class Downloader {
     private int id;
     private String url;
-    private Document doc;
     private HashSet<String> links;
     private String words;
     private String title;
@@ -55,7 +54,7 @@ public class Downloader {
             }
 
             sendStatus("Active");
-
+/*
             try {
                 this.doc = Jsoup.connect(this.url).get();
             } catch (ConnectException e) {
@@ -64,7 +63,7 @@ public class Downloader {
             } catch (Exception e) {
                 handleDownloadFailure();
                 continue;
-            }
+            }*/
 
             try {
                 // Configuration.AUTOFAIL_DOWNLOADERS = true; - caso queira testar a robustez do
@@ -170,23 +169,20 @@ public class Downloader {
     }
 
     private void sendWords() throws IOException {
-        // Constroi a string de dados no formato do protocolo
         String info = "type | url; item_count | " + this.links.size() + "; url | " + this.url
                 + "; referenced_urls | ";
 
-        // Adiciona os links de referencia á string de dados
         int linkCount = 0;
         for (String link : this.links) {
             if (linkCount++ == Configuration.MAXIMUM_REFERENCE_LINKS) {
-                info += "; "; // Adiciona ponto e vírgula para separar links quando chega ao maximo de links
+                info += "; ";
                 break;
             }
 
             if (link == this.links.toArray()[this.links.size() - 1])
                 info += link + "; ";
-                // se link é igual ao último elemento da lista this.links
             else
-                info += link + " "; // Adiciona espaço para separar os links
+                info += link + " ";
         }
 
         // Tratar o caso em que não há links referenciados
