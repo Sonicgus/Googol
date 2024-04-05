@@ -234,9 +234,7 @@ public class Downloader {
                 System.err.println(
                         "Attempts: " + numberTries + " - Failed to send URL to queue, trying again in 3 seconds");
                 Thread.sleep(3000);
-                // Se esta exceção for lançada, isso indica que houve um problema de comunicação
-                // com o servidor de fila de URLs.
-                // E o método tentará enviar os URLs novamente após uma espera de 3 segundos.
+
             }
         }
     }
@@ -257,10 +255,7 @@ public class Downloader {
         } catch (NullPointerException e) {
             return;
         }
-        this.title = title;
-        this.title = this.title.replace("|", "");
-        this.title = this.title.replace(";", "");
-        this.title = this.title.replace("\n", "");
+        this.title = removeIlegalCharacters(title);
         this.description = doc.select("meta[name=description]").attr("content");
 
         String[] words = doc.text().split(" ");
@@ -278,11 +273,13 @@ public class Downloader {
         Elements links = doc.select("a[href]");
         for (Element link : links) {
             String url = link.attr("abs:href");
-            url = url.replace("|", "");
-            url = url.replace(";", "");
-            url = url.replace("\n", "");
+            url = removeIlegalCharacters(url);
             this.links.add(url);
         }
+    }
+
+    private String removeIlegalCharacters(String word) {
+        return word.replace("|", "").replace(";", "").replace("\n", "");
     }
 
 
