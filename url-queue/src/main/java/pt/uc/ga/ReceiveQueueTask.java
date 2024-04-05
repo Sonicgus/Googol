@@ -7,8 +7,11 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public class ReceiveQueueTask implements Runnable {
+
+    private ServerSocket serverSocket;
+    private UrlQueue urlQueue;
+
     public ReceiveQueueTask(int port, UrlQueue urlQueue) {
-        this.port = port;
         this.urlQueue = urlQueue;
         try {
             serverSocket = new ServerSocket(port);
@@ -17,9 +20,6 @@ public class ReceiveQueueTask implements Runnable {
         }
     }
 
-    private ServerSocket serverSocket;
-    private int port;
-    private UrlQueue urlQueue;
 
     @Override
     public void run() {
