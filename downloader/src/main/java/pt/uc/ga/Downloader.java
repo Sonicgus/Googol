@@ -26,10 +26,13 @@ public class Downloader {
         this.links = new HashSet<>();
         this.words = "";
         this.description = "";
+        this.title = "";
+        this.url = "";
+        this.data = "";
     }
 
     /**
-     *
+     * Start the Downloader
      */
     public void start() {
         try {
