@@ -13,19 +13,25 @@ import java.util.List;
 
 public class Barrel implements BarrelInterface {
     private final int id;
-    private final HashMap<String, HashSet<String>> words; // word -> urls
-    private final HashMap<String, SiteInfo> urls; // url -> link_info
-    private final SiteInfoComparator comparator = new SiteInfoComparator();
+    private final HashMap<String, HashSet<String>> words;
+    private final HashMap<String, SiteInfo> urls;
+    private final SiteInfoComparator comparator;
 
 
     public Barrel(int id) {
         this.id = id;
         this.words = new HashMap<>();
         this.urls = new HashMap<>();
+        this.comparator = new SiteInfoComparator();
     }
 
     /**
-     *
+     * Search pages by keywords
+     * @param keywords
+     * @param page_number
+     * @return
+     * @throws FileNotFoundException
+     * @throws IOException
      */
     @Override
     public String search(HashSet<String> keywords, int page_number) throws FileNotFoundException, IOException {
@@ -78,6 +84,13 @@ public class Barrel implements BarrelInterface {
 
     }
 
+    /**
+     * Get link info
+     * @param url
+     * @return
+     * @throws FileNotFoundException
+     * @throws IOException
+     */
     @Override
     public String linkInfo(String url) throws FileNotFoundException, IOException {
         if (urls.containsKey(url)) {
