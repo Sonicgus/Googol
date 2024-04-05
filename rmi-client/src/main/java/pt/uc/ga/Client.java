@@ -81,8 +81,11 @@ public class Client {
                         System.out.println(g.linkInfo(link));
                         break;
                     case "4":
-                        System.out.println(g.getTop10());
-                        break;
+                        System.out.println(g.admin(false));
+                        while (true) {
+                            System.out.println(g.admin(true));
+                        }
+                        //break;
                     case "0":
                         System.out.println("Exiting...");
                         System.exit(0);
@@ -116,9 +119,9 @@ public class Client {
 
     public static void menu() {
         System.out.println("Choose an option:");
-        System.out.println("1. Indexar novo URL ");
-        System.out.println("2. Pesquisar páginas que contenham um conjunto de termos");
-        System.out.println("3. Consultar lista de páginas com ligação para uma página específica");
+        System.out.println("1. Indexar novo URL introduzido por utilizador ");
+        System.out.println("2. Pesquisar páginas que contenham um conjunto de palavras");
+        System.out.println("3. Consultar lista de páginas com ligações para uma página específica");
         System.out.println("4. Página de administração atualizada em tempo real");
         System.out.println("0. Sair");
         System.out.print("Escolha:");

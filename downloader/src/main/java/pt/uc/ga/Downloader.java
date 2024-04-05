@@ -15,31 +15,24 @@ import java.util.HashSet;
 public class Downloader {
     private int id;
     private String url;
+    private Document doc;
     private HashSet<String> links;
-    private String words;
+    private HashSet<String> wordsmap;
     private String title;
-    private String data;
     private String description;
 
     public Downloader(int id) {
         this.id = id;
         this.links = new HashSet<>();
-        this.words = "";
         this.description = "";
-        this.title = "";
-        this.url = "";
-        this.data = "";
+        this.wordsmap = new HashSet<>();
     }
 
     /**
-     * Start the Downloader
+     *
      */
     public void start() {
-        try {
-            sendStatus("Waiting");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        System.out.println("Downloader[" + this.id + "] started");
 
         while (true) {
             clear();
@@ -56,8 +49,6 @@ public class Downloader {
                 continue;
             }
 
-            sendStatus("Active");
-/*
             try {
                 this.doc = Jsoup.connect(this.url).get();
             } catch (ConnectException e) {
@@ -66,14 +57,10 @@ public class Downloader {
             } catch (Exception e) {
                 handleDownloadFailure();
                 continue;
-            }*/
+            }
 
             try {
-                // Configuration.AUTOFAIL_DOWNLOADERS = true; - caso queira testar a robustez do
-                // código;
-                simulateCrashIfNeeded();
-
-                download();
+                filter();
 
                 if (this.title == null || this.title.equals("")) {
                     System.err.println("Failed to download URL: " + this.url);
@@ -81,6 +68,7 @@ public class Downloader {
                 }
 
                 sendWords();
+                sendUrl();
                 sendLinkToQueue(false);
 
             } catch (Exception e) {
@@ -90,6 +78,23 @@ public class Downloader {
         }
     }
 
+    private void sendUrl() {
+        try {
+            InetAddress group = InetAddress.getByName(Configuration.MULTICAST_ADDRESS);
+            MulticastSocket socket = new MulticastSocket(Configuration.MULTICAST_PORT);
+
+            String urlString = "type | url; item_count | 1; url | " + this.url + "; title | " + this.title
+                    + "; description | " + this.description;
+
+            byte[] buffer = urlString.getBytes();
+
+            DatagramPacket packet = new DatagramPacket(buffer, buffer.length, group, Configuration.MULTICAST_PORT);
+            socket.send(packet);
+            socket.close();
+        } catch (IOException e) {
+            handleSendUrlError();
+        }
+    }
 
     private void handleSendUrlError() {
         System.err.println("Failed to send URL to admin for Downloader[" + this.id + "]");
@@ -100,8 +105,6 @@ public class Downloader {
     }
 
     private void handleDownloaderFailure() {
-        System.err.println("Downloader[" + this.id + "] stopped working!");
-
         try {
             this.links.clear();
             this.links.add(this.url);
@@ -110,79 +113,37 @@ public class Downloader {
             System.err.println("Failed to send URL to queue");
         }
 
-        try {
-            sendStatus("Offline");
-        } catch (Exception e1) {
-            System.err.println("Failed to send Downloader[" + this.id + "] status");
-        }
     }
 
-    private void sendStatus(String status) {
-        try {
-            InetAddress group = InetAddress.getByName(Configuration.MULTICAST_ADDRESS);
-            MulticastSocket socket = new MulticastSocket(Configuration.MULTICAST_PORT);
-
-            String statusString = buildStatusString(status);
-
-            byte[] buffer = statusString.getBytes();
-
-            DatagramPacket packet = new DatagramPacket(buffer, buffer.length, group, Configuration.MULTICAST_PORT);
-            socket.send(packet);
-            socket.close();
-        } catch (IOException e) {
-            handleSendStatusError();
-        }
-    }
-
-    private void simulateCrashIfNeeded() throws Exception {
-        if (Configuration.AUTOFAIL_DOWNLOADERS && this.id == getRandomNumber()) {
-            System.out.println("Simulated a crash for Downloader[" + this.id + "]");
-            throw new Exception();
-        }
-    }
-
-    private int getRandomNumber() {
-        return (int) (Math.random() * Configuration.NUM_DOWNLOADERS) + 1;
-    }
-
-    private void handleSendStatusError() {
-        System.err.println("Failed to send status to admin for Downloader[" + this.id + "]");
-    }
-
-    private String buildStatusString(String status) {
-        return "type | Downloader; index | " + this.id + "; status | " + status + "; url | " + this.url;
-    }
 
     private void sendWords() throws IOException {
-        String info = "type | url; item_count | " + this.links.size() + "; url | " + this.url
-                + "; referenced_urls | ";
+        // Constroi a string de dados no formato do protocolo
+        String info = "type | url; url | " + this.url;
 
+        if (this.title != null)
+            info += "; title | " + this.title;
+
+        // Adiciona os links de referencia á string de dados
         int linkCount = 0;
+        if (!this.links.isEmpty())
+            info += "; referenced_urls |";
+
         for (String link : this.links) {
             if (linkCount++ == Configuration.MAXIMUM_REFERENCE_LINKS) {
-                info += "; ";
                 break;
             }
 
-            if (link == this.links.toArray()[this.links.size() - 1])
-                info += link + "; ";
-            else
-                info += link + " ";
+            if (link != this.links.toArray()[this.links.size() - 1])
+                info += " " + link; // Adiciona espaço para separar os links
         }
 
-        // Tratar o caso em que não há links referenciados
-        if (this.links.isEmpty())
-            info += "None; ";
+        if (!this.wordsmap.isEmpty())
+            info += "; words |";
 
-        // Substituir os pontos e vírgulas na string de palavras
-        if (this.words == null)
-            this.words = "None";
-        this.words = this.words.replace(";", " ");
-        this.words = removeIlegalCharacters(this.words);
+        for (String word : wordsmap) {
+            info += " " + word;
+        }
 
-        // repara-se a string de dados completa, incluindo título e palavras
-        info += "title | " + this.title + "; " + "words | " + this.words;
-        this.data = info;
 
         // Obtém o endereço IP do grupo multicast ao qual os dados serão enviados.
         InetAddress group = InetAddress.getByName(Configuration.MULTICAST_ADDRESS);
@@ -191,7 +152,7 @@ public class Downloader {
         MulticastSocket socket = new MulticastSocket(Configuration.MULTICAST_PORT);
 
         // Converte a string this.data em um array de bytes.
-        byte[] buffer = this.data.getBytes();
+        byte[] buffer = info.getBytes();
 
         // Verifica o tamanho dos dados antes de enviar
         if (buffer.length > 65534) {
@@ -210,8 +171,9 @@ public class Downloader {
 
     private void clear() {
         this.links.clear();
-        this.words = "";
-        this.data = "";
+        this.wordsmap.clear();
+        this.title = "";
+        this.description = "";
     }
 
     private void sendLinkToQueue(boolean resend) throws InterruptedException {
@@ -235,22 +197,17 @@ public class Downloader {
                 System.err.println(
                         "Attempts: " + numberTries + " - Failed to send URL to queue, trying again in 3 seconds");
                 Thread.sleep(3000);
-
+                // Se esta exceção for lançada, isso indica que houve um problema de comunicação
+                // com o servidor de fila de URLs.
+                // E o método tentará enviar os URLs novamente após uma espera de 3 segundos.
             }
         }
     }
 
 
-    private void download() {
-        Document doc = null;
-        try {
-            doc = Jsoup.connect(url).get(); // contem todo o conteúdo da página
-        } catch (IOException e) {
-            e.printStackTrace();
-            return;
-        }
+    private void filter() {
 
-        String title = doc.title(); // título da página é extraído usando o método title() do objeto doc.
+        String title; // título da página é extraído usando o método title() do objeto doc.
         try {
             title = doc.title();
         } catch (NullPointerException e) {
@@ -260,18 +217,17 @@ public class Downloader {
         this.description = doc.select("meta[name=description]").attr("content");
 
         String[] words = doc.text().split(" ");
-        // A função text() retorna todo o texto contido na página HTML,excluindo as tags
-        // HTML.
-        // Este texto é então dividido em palavras usando o método split(" ").
 
         for (String word : words) {
-            if (word.contains("|") || word.contains(";") || word.contains("\n"))
-                continue;
-
-            this.words += word + ";";
+            wordsmap.add(removeIlegalCharacters(word));
+        }
+        Elements links;
+        try {
+            links = doc.select("a[href]");
+        } catch (NullPointerException e) {
+            return;
         }
 
-        Elements links = doc.select("a[href]");
         for (Element link : links) {
             String url = link.attr("abs:href");
             url = removeIlegalCharacters(url);
@@ -279,8 +235,8 @@ public class Downloader {
         }
     }
 
-    private String removeIlegalCharacters(String word) {
-        return word.replace("|", "").replace(";", "").replace("\n", "");
+    private String removeIlegalCharacters(String str) {
+        return str.replace("|", "").replace(";", "").replace("\n", "");
     }
 
 

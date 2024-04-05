@@ -27,6 +27,7 @@ public class Barrel implements BarrelInterface {
 
     /**
      * Search pages by keywords
+     *
      * @param keywords
      * @param page_number
      * @return
@@ -35,8 +36,6 @@ public class Barrel implements BarrelInterface {
      */
     @Override
     public String search(HashSet<String> keywords, int page_number) throws FileNotFoundException, IOException {
-        //measure time of search
-        long startTime = System.currentTimeMillis();
         HashSet<SiteInfo> urlss = new HashSet<>();
         for (String keyword : keywords) {
             if (words.containsKey(keyword)) {
@@ -71,14 +70,12 @@ public class Barrel implements BarrelInterface {
             response += "URL:" + site.getUrl() + "\nTitle:" + site.getTitle() + "\nDescription:" + site.getDescription() + "\nNumber of URLs pointing to this URL:" + site.getNumUrls() + "\n\n";
         }
 
-        long endTime = System.currentTimeMillis();
-        long timeElapsed = endTime - startTime;
         int var = numresults / 10 + 1;
         if (numresults % 10 == 0) {
             var--;
         }
 
-        response += "Page " + (page_number + 1) + "/" + var + " Number of results: " + numresults + " TimeElapsed:" + timeElapsed + "ms";
+        response += "Page " + (page_number + 1) + "/" + var + " Number of results: " + numresults;
 
         return response;
 
@@ -86,6 +83,7 @@ public class Barrel implements BarrelInterface {
 
     /**
      * Get link info
+     *
      * @param url
      * @return
      * @throws FileNotFoundException
@@ -110,9 +108,7 @@ public class Barrel implements BarrelInterface {
     private void parser(String info) {
         // chave1 | valor1; chave2 | valor2
         // exemplo:
-        // type | words_list; item_count | 2; item_0 | banana; item_1 | fixe;
-        // type | url_list; item_count | 2; item_0 | www.uc.pt; item_1 | www.google.com;
-        // type | link_info; url | www.uc.pt; title | DEI; description | DEI é fixe;
+        // type | link_info; url | www.uc.pt; title | DEI; description | DEI é fixe; referenced_urls | www.google.com www.facebook.com; words | DEI UC;
         String[] parts = info.split(";");
 
         HashMap<String, String> dici = new HashMap<String, String>();
@@ -123,53 +119,57 @@ public class Barrel implements BarrelInterface {
                 dici.put(key_value_pair[0].trim(), key_value_pair[1].trim());
             }
         }
+        if (dici.containsKey("type")) {
+            if (dici.get("type").equals("url") && dici.containsKey("url")) {
+                SiteInfo site = new SiteInfo();
 
-        if (dici.get("type").equals("url") && dici.containsKey("url")) {
-            SiteInfo site = new SiteInfo();
+                site.setUrl(dici.get("url"));
 
-            site.setUrl(dici.get("url"));
+                if (dici.containsKey("title"))
+                    site.setTitle(dici.get("title"));
 
-            if (dici.containsKey("title"))
-                site.setTitle(dici.get("title"));
-            if (dici.containsKey("description"))
-                site.setDescription(dici.get("description"));
+                if (dici.containsKey("description"))
+                    site.setDescription(dici.get("description"));
 
-            if (dici.containsKey("referenced_urls")) {
-                String[] urlss = dici.get("referenced_urls").split(" ");
-                for (String url : urlss) {
-                    if (urls.containsKey(url)) {
-                        urls.get(url).getUrls().add(site.getUrl());
-                    } else {
-                        SiteInfo siteaux = new SiteInfo();
-                        siteaux.setUrl(url);
-                        siteaux.getUrls().add(site.getUrl());
-                        urls.put(url, siteaux);
+                if (dici.containsKey("referenced_urls")) {
+                    String[] urlss = dici.get("referenced_urls").split(" ");
+                    for (String url : urlss) {
+                        if (urls.containsKey(url)) {
+                            urls.get(url).getUrls().add(site.getUrl());
+                        } else {
+                            SiteInfo siteaux = new SiteInfo();
+                            siteaux.setUrl(url);
+                            siteaux.getUrls().add(site.getUrl());
+                            urls.put(url, siteaux);
+                        }
                     }
                 }
-            }
 
-            if (dici.containsKey("words")) {
-                String[] wordss = dici.get("words").split(" ");
+                if (dici.containsKey("words")) {
+                    String[] wordss = dici.get("words").split(" ");
 
-                for (String word : wordss) {
-                    if (words.containsKey(word)) {
-                        words.get(word).add(site.getUrl());
-                    } else {
-                        HashSet<String> urlsaux = new HashSet<String>();
-                        urlsaux.add(site.getUrl());
-                        words.put(word, urlsaux);
+                    for (String word : wordss) {
+                        if (words.containsKey(word)) {
+                            words.get(word).add(site.getUrl());
+                        } else {
+                            HashSet<String> urlsaux = new HashSet<String>();
+                            urlsaux.add(site.getUrl());
+                            words.put(word, urlsaux);
+                        }
                     }
                 }
-            }
 
-            if (urls.containsKey(dici.get("url"))) {
-                //if already exists update with title, description
-                urls.get(dici.get("url")).setTitle(site.getTitle());
-                urls.get(dici.get("url")).setDescription(site.getDescription());
-            } else {
-                urls.put(site.getUrl(), site);
-            }
+                if (urls.containsKey(dici.get("url"))) {
+                    //if already exists update with title, description
+                    if (dici.containsKey("title"))
+                        urls.get(dici.get("url")).setTitle(site.getTitle());
+                    if (dici.containsKey("description"))
+                        urls.get(dici.get("url")).setDescription(site.getDescription());
+                } else {
+                    urls.put(site.getUrl(), site);
+                }
 
+            }
         }
     }
 

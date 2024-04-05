@@ -13,3 +13,4 @@ start cmd /k "java -jar barrel-1.0.0-SNAPSHOT.jar 0"
 start cmd /k "java -jar barrel-1.0.0-SNAPSHOT.jar 1"
 cd ..\..\rmi-client\target
 start cmd /k "java -jar rmi-client-1.0.0-SNAPSHOT.jar"
+start cmd /k "java -jar rmi-client-1.0.0-SNAPSHOT.jar"

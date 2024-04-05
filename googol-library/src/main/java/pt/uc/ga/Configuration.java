@@ -1,10 +1,6 @@
 package pt.uc.ga;
 
 public class Configuration {
-    public static boolean AUTOFAIL_DOWNLOADERS = false;
-
-    public static final int NUM_DOWNLOADERS = 5;
-
     public static final String RMI_HOST = "localhost";
 
     public static final int PORT_A = 9080;
@@ -14,5 +10,6 @@ public class Configuration {
 
     public static final int MULTICAST_PORT = 4321;
     public static final String MULTICAST_ADDRESS = "224.3.2.1";
+
     public static final int MAXIMUM_REFERENCE_LINKS = 10;
 }
