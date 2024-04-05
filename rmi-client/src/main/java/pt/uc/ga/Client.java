@@ -28,15 +28,15 @@ public class Client {
             Scanner scanner = new Scanner(System.in);
             do {
                 menu();
-                char option = scanner.nextLine().charAt(0);
+                String option = scanner.nextLine();
 
                 switch (option) {
-                    case '1':
+                    case "1":
                         System.out.println("Enter the URL to index: ");
                         String url = scanner.nextLine();
                         System.out.println(g.addLink(url));
                         break;
-                    case '2':
+                    case "2":
                         int currentPage = 0;
                         System.out.print("Enter the keyword to search: ");
                         HashSet<String> keywords = new HashSet<String>();
@@ -75,15 +75,15 @@ public class Client {
 
                         }
                         break;
-                    case '3':
+                    case "3":
                         System.out.println("Enter the link to search: ");
                         String link = scanner.nextLine();
                         System.out.println(g.linkInfo(link));
                         break;
-                    case '4':
+                    case "4":
                         System.out.println(g.getTop10());
                         break;
-                    case '0':
+                    case "0":
                         System.out.println("Exiting...");
                         System.exit(0);
                         scanner.close();

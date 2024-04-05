@@ -2,11 +2,10 @@ package pt.uc.ga;
 
 import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.Queue;
 import java.util.Set;
 
 public class UrlQueue {
-    private Queue<String> queue; // Queue to store URLs to be processed
+    private LinkedList<String> queue; // Queue to store URLs to be processed
     private Set<String> visited; // Set to keep track of visited URLs
 
     public UrlQueue() {

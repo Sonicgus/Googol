@@ -2,7 +2,6 @@ package pt.uc.ga;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.MalformedURLException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.rmi.NotBoundException;
@@ -21,6 +20,7 @@ public class Gateway implements GatewayInterface {
 
 
     /**
+     *
      * @param url
      * @return
      * @throws UnknownHostException
@@ -43,6 +43,7 @@ public class Gateway implements GatewayInterface {
     }
 
     /**
+     *
      * @param url
      * @return
      * @throws RemoteException
@@ -69,11 +70,11 @@ public class Gateway implements GatewayInterface {
     }
 
     /**
+     *
      * @param keywords
+     * @param page_number
      * @return
      * @throws RemoteException
-     * @throws MalformedURLException
-     * @throws NotBoundException
      */
     @Override
     public String search(HashSet<String> keywords, int page_number) throws RemoteException {
@@ -107,6 +108,10 @@ public class Gateway implements GatewayInterface {
 
     }
 
+    /**
+     *
+     * @return
+     */
     public BarrelInterface getRandomBarrel() {
         while (true) {
             try {
@@ -130,6 +135,7 @@ public class Gateway implements GatewayInterface {
     }
 
     /**
+     *
      * @return
      * @throws RemoteException
      */
