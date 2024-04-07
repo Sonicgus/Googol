@@ -41,15 +41,17 @@ public class UrlQueue {
     /**
      * Add a URL to the queue
      */
-    public synchronized void addUrl(String url, boolean resend) {
-        if (!resend && visited.contains(url))
+    public synchronized void addUrl(String url) {
+        if (queue.contains(url)) {
             return;
+        }
 
         System.out.println("Added url: " + url);
         queue.add(url);
         visited.add(url);
         save();
     }
+
 
     public void load() {
         try {
@@ -63,7 +65,7 @@ public class UrlQueue {
             queue = new LinkedList<>();
             visited = new HashSet<>();
             if (initialUrl != null)
-                addUrl(initialUrl, false);
+                addUrl(initialUrl);
 
         }
     }

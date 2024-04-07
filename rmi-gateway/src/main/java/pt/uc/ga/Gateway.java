@@ -17,11 +17,11 @@ public class Gateway implements IGateway {
     private long avgtime;
     private long num_searches;
 
-    private int MULTICAST_PORT;
-    private String MULTICAST_ADDRESS;
-    private int PORT_B;
-    private String RMI_HOST;
-    private int RMI_GATEWAY_PORT;
+    private final int MULTICAST_PORT;
+    private final String MULTICAST_ADDRESS;
+    private final int PORT_B;
+    private final String RMI_HOST;
+    private final int RMI_GATEWAY_PORT;
 
 
     public Gateway(String MULTICAST_ADDRESS, int MULTICAST_PORT, int PORT_B, String RMI_HOST, int RMI_GATEWAY_PORT) {

@@ -10,6 +10,8 @@ public class ReceiveQueueTask implements Runnable {
 
     private ServerSocket serverSocket;
     private final UrlQueue urlQueue;
+    Socket socket;
+    BufferedReader in;
 
     public ReceiveQueueTask(int port, UrlQueue urlQueue) {
         this.urlQueue = urlQueue;
@@ -18,6 +20,8 @@ public class ReceiveQueueTask implements Runnable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+
     }
 
 
@@ -25,26 +29,23 @@ public class ReceiveQueueTask implements Runnable {
     public void run() {
         while (true) {
             try {
-                receiveUrl();
+                socket = serverSocket.accept();
+                BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                String url;
+                while (true) {
+                    if ((url = in.readLine()) != null) {
+                        urlQueue.addUrl(url);
+                    }
+                }
             } catch (IOException e) {
                 e.printStackTrace();
+                try {
+                    in.close();
+                    socket.close();
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
             }
-        }
-    }
-
-    private void receiveUrl() throws IOException {
-        Socket socket = serverSocket.accept();
-        BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-
-        String url;
-        boolean resend = false;
-        while ((url = in.readLine()) != null) {
-            if (url.startsWith("[RESEND]")) {
-                url = url.substring(8);
-                System.out.println("[RE-ADDED]: " + url);
-                resend = true;
-            }
-            urlQueue.addUrl(url, resend);
         }
     }
 }

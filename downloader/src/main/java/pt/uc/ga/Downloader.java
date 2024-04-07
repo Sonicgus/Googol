@@ -61,10 +61,17 @@ public class Downloader {
             try {
                 this.doc = Jsoup.connect(this.url).get();
             } catch (ConnectException e) {
-                handleConnectionFailure();
+                System.out.println("Connection failed to URL: " + this.url);
+                try {
+                    this.links.clear();
+                    this.links.add(this.url);
+                    sendLinkToQueue();
+                } catch (Exception e1) {
+                    System.err.println("Failed to send URL to queue");
+                }
                 continue;
             } catch (Exception e) {
-                handleDownloadFailure();
+                System.err.println("Failed to download URL: " + this.url);
                 continue;
             }
 
@@ -75,10 +82,16 @@ public class Downloader {
 
                 sendWords();
                 sendUrl();
-                sendLinkToQueue(false);
+                sendLinkToQueue();
 
             } catch (Exception e) {
-                handleDownloaderFailure();
+                try {
+                    this.links.clear();
+                    this.links.add(this.url);
+                    sendLinkToQueue();
+                } catch (Exception e1) {
+                    System.err.println("Failed to send URL to queue");
+                }
             }
         }
     }
@@ -97,57 +110,30 @@ public class Downloader {
             socket.send(packet);
             socket.close();
         } catch (IOException e) {
-            handleSendUrlError();
+            System.err.println("Failed to send URL to admin for Downloader");
         }
-    }
-
-    private void handleSendUrlError() {
-        System.err.println("Failed to send URL to admin for Downloader");
-    }
-
-    private void handleDownloadFailure() {
-        System.err.println("Failed to download URL: " + this.url);
-    }
-
-    private void handleDownloaderFailure() {
-        try {
-            this.links.clear();
-            this.links.add(this.url);
-            sendLinkToQueue(true);
-        } catch (Exception e1) {
-            System.err.println("Failed to send URL to queue");
-        }
-
     }
 
 
     private void sendWords() throws IOException {
-        // Constroi a string de dados no formato do protocolo
         String info = getInfo();
 
 
-        // Obtém o endereço IP do grupo multicast ao qual os dados serão enviados.
         InetAddress group = InetAddress.getByName(this.MULTICAST_ADDRESS);
 
-        // Cria um socket de multicast que será usado para enviar os dados para o grupo
         MulticastSocket socket = new MulticastSocket(this.MULTICAST_PORT);
 
-        // Converte a string this.data em um array de bytes.
         byte[] buffer = info.getBytes();
 
-        // Verifica o tamanho dos dados antes de enviar
         if (buffer.length > 65534) {
             System.err.println("Downloader [Page too long] " + "failed to send url to queue");
             socket.close();
-            return; // Retorna se a página for muito longa
+            return;
         }
 
-        // Envia os dados para o grupo multicast
-        // DatagramPacket encapsula os dados a serem enviados, o endereço do grupo
-        // multicast e a porta do multicast.
         DatagramPacket packet = new DatagramPacket(buffer, buffer.length, group, this.MULTICAST_PORT);
-        socket.send(packet); // Envie o DatagramPacket através do socket multicast.
-        socket.close();// fecha o socket
+        socket.send(packet);
+        socket.close();
     }
 
     private String getInfo() {
@@ -156,7 +142,6 @@ public class Downloader {
         if (this.title != null)
             info.append("; title | ").append(this.title);
 
-        // Adiciona os links de referencia á string de dados
         int linkCount = 0;
         if (!this.links.isEmpty())
             info.append("; referenced_urls |");
@@ -167,7 +152,7 @@ public class Downloader {
             }
 
             if (link != this.links.toArray()[this.links.size() - 1])
-                info.append(" ").append(link); // Adiciona espaço para separar os links
+                info.append(" ").append(link);
         }
 
         if (!this.wordsmap.isEmpty())
@@ -186,30 +171,21 @@ public class Downloader {
         this.description = "";
     }
 
-    private void sendLinkToQueue(boolean resend) throws InterruptedException {
-        int numberTries = 0;
+    private void sendLinkToQueue() throws InterruptedException {
         while (true) {
             try {
                 Socket socket = new Socket("localhost", this.PORT_B);
                 PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 
                 for (String link : links) {
-                    if (resend) {
-                        link = "[RESEND]" + link;
-                    }
                     out.println(link);
                 }
 
                 socket.close();
-                break; // Break the loop if sending succeeds
+                break;
             } catch (IOException e) {
-                numberTries++;
-                System.err.println(
-                        "Attempts: " + numberTries + " - Failed to send URL to queue, trying again in 3 seconds");
+                System.err.println("Failed to send URL to queue, trying again in 3 seconds");
                 Thread.sleep(3000);
-                // Se esta exceção for lançada, isso indica que houve um problema de comunicação
-                // com o servidor de fila de URLs.
-                // E o método tentará enviar os URLs novamente após uma espera de 3 segundos.
             }
         }
     }
@@ -217,7 +193,7 @@ public class Downloader {
 
     private void filter() {
 
-        String title; // título da página é extraído usando o método title() do objeto doc.
+        String title;
         try {
             title = doc.title();
         } catch (NullPointerException e) {
@@ -251,18 +227,6 @@ public class Downloader {
 
     private String removeIlegalCharacters(String str) {
         return str.replace("|", "").replace(";", "").replace("\n", "");
-    }
-
-
-    private void handleConnectionFailure() {
-        System.out.println("Connection failed to URL: " + this.url);
-        try {
-            this.links.clear();
-            this.links.add(this.url);
-            sendLinkToQueue(true);
-        } catch (Exception e1) {
-            System.err.println("Failed to send URL to queue");
-        }
     }
 
 
