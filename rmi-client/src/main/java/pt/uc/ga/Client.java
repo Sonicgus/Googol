@@ -81,9 +81,20 @@ public class Client {
                         System.out.println(g.linkInfo(link));
                         break;
                     case "4":
-                        System.out.println(g.admin(false));
+                        try {
+                            System.out.println(g.admin(false));
+                        } catch (Exception e) {
+                            System.out.println("Exception in admin: " + e);
+                            e.printStackTrace();
+                        }
                         while (true) {
-                            System.out.println(g.admin(true));
+                            try {
+                                System.out.println(g.admin(true));
+                            } catch (Exception e) {
+                                System.out.println("Exception in admin: " + e);
+                                e.printStackTrace();
+                            }
+
                         }
                         //break;
                     case "0":

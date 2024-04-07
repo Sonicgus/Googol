@@ -197,7 +197,9 @@ public class Gateway implements GatewayInterface {
                 String[] messages = received.split(";");
                 for (String message : messages) {
                     String[] parts = message.split("\\|");
-                    dici.put(parts[0].trim(), parts[1].trim());
+                    if (parts.length == 2) {
+                        dici.put(parts[0].trim(), parts[1].trim());
+                    }
                 }
                 if (dici.containsKey("type") && dici.get("type").equals("adminupdated")) {
                     socket.leaveGroup(groupAddress, networkInterface);
@@ -251,6 +253,6 @@ public class Gateway implements GatewayInterface {
             copysearches.remove(max);
         }
 
-        return response;
+        return response + "Average search time: " + avgtime / 100 + " décimas de segundo";
     }
 }
