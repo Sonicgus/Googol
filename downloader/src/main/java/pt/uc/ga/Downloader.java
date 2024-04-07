@@ -25,6 +25,7 @@ public class Downloader {
         this.id = id;
         this.links = new HashSet<>();
         this.description = "";
+        this.title = "";
         this.wordsmap = new HashSet<>();
     }
 

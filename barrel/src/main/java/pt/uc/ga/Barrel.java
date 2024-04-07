@@ -108,7 +108,7 @@ public class Barrel implements BarrelInterface {
     private void parser(String info) {
         // chave1 | valor1; chave2 | valor2
         // exemplo:
-        // type | link_info; url | www.uc.pt; title | DEI; description | DEI é fixe; referenced_urls | www.google.com www.facebook.com; words | DEI UC;
+        // type | url; url | www.uc.pt; title | DEI; description | DEI é fixe; referenced_urls | www.google.com www.facebook.com; words | DEI UC;
         String[] parts = info.split(";");
 
         HashMap<String, String> dici = new HashMap<String, String>();
