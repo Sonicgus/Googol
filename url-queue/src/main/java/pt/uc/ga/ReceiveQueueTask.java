@@ -26,26 +26,25 @@ public class ReceiveQueueTask implements Runnable {
         while (true) {
             try {
                 receiveUrl();
-            } catch (Exception e) {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }
     }
 
     private void receiveUrl() throws IOException {
-        try (Socket socket = serverSocket.accept();
-             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))) { // Create a
-            String url;
-            boolean resend = false;
-            while ((url = in.readLine()) != null) {
-                if (url.startsWith("[RESEND]")) {
-                    url = url.substring(8);
-                    System.out.println("[RE-ADDED]: " + url);
-                    resend = true;
-                }
-                urlQueue.addUrl(url, resend);
+        Socket socket = serverSocket.accept();
+        BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
+        String url;
+        boolean resend = false;
+        while ((url = in.readLine()) != null) {
+            if (url.startsWith("[RESEND]")) {
+                url = url.substring(8);
+                System.out.println("[RE-ADDED]: " + url);
+                resend = true;
             }
+            urlQueue.addUrl(url, resend);
         }
     }
 }
