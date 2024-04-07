@@ -34,7 +34,11 @@ public class ReceiveQueueTask implements Runnable {
                 String url;
                 while (true) {
                     if ((url = in.readLine()) != null) {
-                        urlQueue.addUrl(url);
+                        if (url.startsWith("resend")) {
+                            urlQueue.addUrl(url.substring(6), true);
+                        } else {
+                            urlQueue.addUrl(url, false);
+                        }
                     }
                 }
             } catch (IOException e) {

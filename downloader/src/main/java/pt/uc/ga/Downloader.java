@@ -65,7 +65,7 @@ public class Downloader {
                 try {
                     this.links.clear();
                     this.links.add(this.url);
-                    sendLinkToQueue();
+                    sendLinkToQueue(true);
                 } catch (Exception e1) {
                     System.err.println("Failed to send URL to queue");
                 }
@@ -82,13 +82,13 @@ public class Downloader {
 
                 sendWords();
                 sendUrl();
-                sendLinkToQueue();
+                sendLinkToQueue(false);
 
             } catch (Exception e) {
                 try {
                     this.links.clear();
                     this.links.add(this.url);
-                    sendLinkToQueue();
+                    sendLinkToQueue(true);
                 } catch (Exception e1) {
                     System.err.println("Failed to send URL to queue");
                 }
@@ -171,14 +171,17 @@ public class Downloader {
         this.description = "";
     }
 
-    private void sendLinkToQueue() throws InterruptedException {
+    private void sendLinkToQueue(boolean resend) throws InterruptedException {
         while (true) {
             try {
                 Socket socket = new Socket("localhost", this.PORT_B);
                 PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 
                 for (String link : links) {
-                    out.println(link);
+                    if (resend)
+                        out.println("resend" + link);
+                    else
+                        out.println(link);
                 }
 
                 socket.close();
