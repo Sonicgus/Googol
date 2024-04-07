@@ -89,6 +89,11 @@ public class Barrel implements IBarrel {
         return "URL not found";
     }
 
+    @Override
+    public void ping() {
+        System.out.println("Ping barrel");
+    }
+
 
     /**
      *

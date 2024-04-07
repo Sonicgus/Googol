@@ -10,4 +10,5 @@ public interface IBarrel extends Remote {
 
     String linkInfo(String url) throws RemoteException;
 
+    void ping() throws RemoteException;
 }

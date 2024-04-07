@@ -162,10 +162,17 @@ public class Gateway implements IGateway {
                         barrelsList.add(s);
                     }
                 }
-                //get a random barrel
-                String randomBarrel = (String) barrelsList.toArray()[(int) (Math.random() * barrelsList.size())];
-                return (IBarrel) registry.lookup(randomBarrel);
-            } catch (RemoteException | NotBoundException e) {
+                while (!barrelsList.isEmpty()) {
+                    //get a random barrel
+                    String randomBarrel = (String) barrelsList.toArray()[(int) (Math.random() * barrelsList.size())];
+                    try {
+                        return (IBarrel) registry.lookup(randomBarrel);
+                    } catch (NotBoundException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+                throw new RuntimeException("No barrels are available");
+            } catch (RemoteException e) {
                 throw new RuntimeException(e);
             }
         }
@@ -224,8 +231,17 @@ public class Gateway implements IGateway {
             String[] list = registry.list();
             //only get Strings starting with the word barrel
             for (String s : list) {
-                if (s.startsWith("barrel"))
-                    response.append(s).append("\n");
+                if (s.startsWith("barrel")) {
+                    //check if is active}
+                    try {
+                        IBarrel b = (IBarrel) registry.lookup(s);
+                        b.ping();
+                        response.append(s).append("\n");
+                    } catch (Exception e) {
+                        System.out.println("Barrel " + s + " is not active");
+                    }
+
+                }
             }
         } catch (RemoteException e) {
             e.printStackTrace();
