@@ -6,7 +6,7 @@ import java.rmi.registry.Registry;
 import java.util.Scanner;
 
 public class Client {
-    private GatewayInterface g;
+    private IGateway g;
     private final Scanner scanner;
     private boolean admin;
     private final Object lock;
@@ -52,7 +52,7 @@ public class Client {
         while (true) {
             try {
                 Registry registry = LocateRegistry.getRegistry(Configuration.RMI_HOST, Configuration.RMI_GATEWAY_PORT);
-                this.g = (GatewayInterface) registry.lookup("googol");
+                this.g = (IGateway) registry.lookup("googol");
                 return;
             } catch (Exception e) {
                 System.out.println("Gateway não disponivel, a tentar em 5 segundos...");

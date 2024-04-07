@@ -4,7 +4,7 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.HashSet;
 
-public interface BarrelInterface extends Remote {
+public interface IBarrel extends Remote {
 
     String search(HashSet<String> keywords, int page_number) throws RemoteException;
 

@@ -5,7 +5,7 @@ import java.rmi.NotBoundException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
-public interface GatewayInterface extends Remote {
+public interface IGateway extends Remote {
     /**
      *
      */
