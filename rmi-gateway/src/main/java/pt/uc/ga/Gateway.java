@@ -86,7 +86,9 @@ public class Gateway implements IGateway {
         }
 
         try {
-            return b.linkInfo(url);
+            String res = b.linkInfo(url);
+            notifyGateway();
+            return res;
         } catch (Exception e) {
             System.out.println("Exception in linkInfo: " + e);
             e.printStackTrace();
@@ -122,12 +124,7 @@ public class Gateway implements IGateway {
         }
     }
 
-    private synchronized void calculateAvg(long time) {
-        avgtime = (avgtime * num_searches + time) / (num_searches + 1);
-        num_searches++;
-        //save object file with searches, avgtime and num_searches
-        save();
-
+    private void notifyGateway() {
         //send avg to multicast
         try {
             // Criação do socket de multicast
@@ -148,6 +145,14 @@ public class Gateway implements IGateway {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private synchronized void calculateAvg(long time) {
+        avgtime = (avgtime * num_searches + time) / (num_searches + 1);
+        num_searches++;
+        //save object file with searches, avgtime and num_searches
+        save();
+        notifyGateway();
     }
 
     /**
