@@ -13,19 +13,17 @@ import java.net.*;
 import java.util.HashSet;
 
 public class Downloader {
-    private int id;
+    private final int id;
     private String url;
     private Document doc;
-    private HashSet<String> links;
-    private HashSet<String> wordsmap;
+    private final HashSet<String> links;
+    private final HashSet<String> wordsmap;
     private String title;
     private String description;
 
     public Downloader(int id) {
         this.id = id;
         this.links = new HashSet<>();
-        this.description = "";
-        this.title = "";
         this.wordsmap = new HashSet<>();
     }
 
@@ -33,11 +31,9 @@ public class Downloader {
      *
      */
     public void start() {
-        System.out.println("Downloader[" + this.id + "] started");
+        System.out.println("Downloader " + this.id + " started");
 
         while (true) {
-            clear();
-
             try {
                 this.url = getUrl();
             } catch (InterruptedException e) {
@@ -60,13 +56,10 @@ public class Downloader {
                 continue;
             }
 
+            clear();
+
             try {
                 filter();
-
-                if (this.title == null || this.title.equals("")) {
-                    System.err.println("Failed to download URL: " + this.url);
-                    continue;
-                }
 
                 sendWords();
                 sendUrl();
@@ -74,7 +67,6 @@ public class Downloader {
 
             } catch (Exception e) {
                 handleDownloaderFailure();
-                continue;
             }
         }
     }
@@ -119,31 +111,7 @@ public class Downloader {
 
     private void sendWords() throws IOException {
         // Constroi a string de dados no formato do protocolo
-        String info = "type | url; url | " + this.url;
-
-        if (this.title != null)
-            info += "; title | " + this.title;
-
-        // Adiciona os links de referencia á string de dados
-        int linkCount = 0;
-        if (!this.links.isEmpty())
-            info += "; referenced_urls |";
-
-        for (String link : this.links) {
-            if (linkCount++ == Configuration.MAXIMUM_REFERENCE_LINKS) {
-                break;
-            }
-
-            if (link != this.links.toArray()[this.links.size() - 1])
-                info += " " + link; // Adiciona espaço para separar os links
-        }
-
-        if (!this.wordsmap.isEmpty())
-            info += "; words |";
-
-        for (String word : wordsmap) {
-            info += " " + word;
-        }
+        String info = getInfo();
 
 
         // Obtém o endereço IP do grupo multicast ao qual os dados serão enviados.
@@ -168,6 +136,35 @@ public class Downloader {
         DatagramPacket packet = new DatagramPacket(buffer, buffer.length, group, Configuration.MULTICAST_PORT);
         socket.send(packet); // Envie o DatagramPacket através do socket multicast.
         socket.close();// fecha o socket
+    }
+
+    private String getInfo() {
+        StringBuilder info = new StringBuilder("type | url; url | " + this.url);
+
+        if (this.title != null)
+            info.append("; title | ").append(this.title);
+
+        // Adiciona os links de referencia á string de dados
+        int linkCount = 0;
+        if (!this.links.isEmpty())
+            info.append("; referenced_urls |");
+
+        for (String link : this.links) {
+            if (linkCount++ == Configuration.MAXIMUM_REFERENCE_LINKS) {
+                break;
+            }
+
+            if (link != this.links.toArray()[this.links.size() - 1])
+                info.append(" ").append(link); // Adiciona espaço para separar os links
+        }
+
+        if (!this.wordsmap.isEmpty())
+            info.append("; words |");
+
+        for (String word : wordsmap) {
+            info.append(" ").append(word);
+        }
+        return info.toString();
     }
 
     private void clear() {

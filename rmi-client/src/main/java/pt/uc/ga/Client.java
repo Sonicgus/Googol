@@ -1,5 +1,6 @@
 package pt.uc.ga;
 
+import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.Arrays;
@@ -26,11 +27,13 @@ public class Client {
                     }
                 }
                 try {
-                    String response = g.admin(true);
+                    String response = g.getAdminPage(true);
                     if (admin)
                         System.out.println(response);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                    getGateway();
                 } catch (Exception e) {
-                    System.out.println("Exception in admin: " + e);
                     e.printStackTrace();
                 }
             }
@@ -38,7 +41,7 @@ public class Client {
     }
 
     public Client() {
-        g = getGateway();
+        getGateway();
         scanner = new Scanner(System.in);
         admin = false;
         lock = new Object();
@@ -47,11 +50,12 @@ public class Client {
         t.start();
     }
 
-    private GatewayInterface getGateway() {
+    private void getGateway() {
         while (true) {
             try {
                 Registry registry = LocateRegistry.getRegistry(Configuration.RMI_HOST, Configuration.RMI_GATEWAY_PORT);
-                return (GatewayInterface) registry.lookup("googol");
+                this.g = (GatewayInterface) registry.lookup("googol");
+                return;
             } catch (Exception e) {
                 System.out.println("Gateway não disponivel, a tentar em 5 segundos...");
                 try {
@@ -162,7 +166,7 @@ public class Client {
                         break;
                     case "4":
                         try {
-                            System.out.println(g.admin(false));
+                            System.out.println(g.getAdminPage(false));
                         } catch (Exception e) {
                             System.out.println("Exception in admin: " + e);
                             e.printStackTrace();
@@ -190,7 +194,7 @@ public class Client {
             } catch (Exception e) {
                 System.out.println("Exception in main: " + e);
                 e.printStackTrace();
-                g = getGateway();
+                getGateway();
             }
         }
     }

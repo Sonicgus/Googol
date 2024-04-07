@@ -9,7 +9,7 @@ import java.net.Socket;
 public class ReceiveQueueTask implements Runnable {
 
     private ServerSocket serverSocket;
-    private UrlQueue urlQueue;
+    private final UrlQueue urlQueue;
 
     public ReceiveQueueTask(int port, UrlQueue urlQueue) {
         this.urlQueue = urlQueue;

@@ -8,7 +8,7 @@ import java.net.Socket;
 public class SendQueueTask implements Runnable {
     private ServerSocket serverSocket;
 
-    private UrlQueue urlQueue;
+    private final UrlQueue urlQueue;
 
     public SendQueueTask(int port, UrlQueue urlQueue) {
         this.urlQueue = urlQueue;

@@ -1,14 +1,14 @@
 package pt.uc.ga;
 
 
-import java.io.IOException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.Scanner;
 
 public class Main {
-    public static void main(String args[]) throws IOException {
+    public static void main(String[] args) {
 
         try {
             Gateway g = new Gateway();
@@ -20,12 +20,7 @@ public class Main {
         } catch (RemoteException re) {
             System.out.println("Exception in GatewayImpl.main: " + re);
         }
-        while (true) {
-            try {
-                Thread.sleep(Long.MAX_VALUE);
-            } catch (InterruptedException e) {
-                System.exit(0);
-            }
-        }
+        new Scanner(System.in).nextLine();
+        System.exit(0);
     }
 }

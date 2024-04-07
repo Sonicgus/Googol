@@ -5,8 +5,8 @@ import java.util.LinkedList;
 import java.util.Set;
 
 public class UrlQueue {
-    private LinkedList<String> queue;
-    private Set<String> visited;
+    private final LinkedList<String> queue;
+    private final Set<String> visited;
 
     /**
      * Constructor for the UrlQueue class
@@ -30,9 +30,6 @@ public class UrlQueue {
 
     /**
      * Add a URL to the queue
-     *
-     * @param url
-     * @param resend
      */
     public synchronized void addUrl(String url, boolean resend) {
         if (!resend && visited.contains(url))

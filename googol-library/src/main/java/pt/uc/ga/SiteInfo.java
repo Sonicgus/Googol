@@ -1,16 +1,17 @@
 package pt.uc.ga;
 
+import java.io.Serial;
 import java.util.HashSet;
 
 public class SiteInfo implements java.io.Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     private String title;
     private String description;
-    private HashSet<String> urls;
+    private final HashSet<String> urls;
     private String url;
-    private int numUrls;
 
 
     public SiteInfo() {

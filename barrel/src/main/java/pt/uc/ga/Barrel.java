@@ -1,6 +1,5 @@
 package pt.uc.ga;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.*;
 import java.rmi.RemoteException;
@@ -10,6 +9,8 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+
+import static pt.uc.ga.FuncLib.getDici;
 
 public class Barrel implements BarrelInterface {
     private final int id;
@@ -27,15 +28,9 @@ public class Barrel implements BarrelInterface {
 
     /**
      * Search pages by keywords
-     *
-     * @param keywords
-     * @param page_number
-     * @return
-     * @throws FileNotFoundException
-     * @throws IOException
      */
     @Override
-    public String search(HashSet<String> keywords, int page_number) throws FileNotFoundException, IOException {
+    public String search(HashSet<String> keywords, int page_number) {
         HashSet<SiteInfo> urlss = new HashSet<>();
         for (String keyword : keywords) {
             if (words.containsKey(keyword)) {
@@ -43,9 +38,7 @@ public class Barrel implements BarrelInterface {
                 for (String url : words.get(keyword)) {
                     if (urls.containsKey(url)) {
                         // if not in urlss the add
-                        if (!urlss.contains(urls.get(url))) {
-                            urlss.add(urls.get(url));
-                        }
+                        urlss.add(urls.get(url));
 
                     }
                 }
@@ -63,11 +56,11 @@ public class Barrel implements BarrelInterface {
         }
 
 
-        String response = "Search results:\n";
+        StringBuilder response = new StringBuilder("Search results:\n");
 
 
         for (SiteInfo site : lista) {
-            response += "URL:" + site.getUrl() + "\nTitle:" + site.getTitle() + "\nDescription:" + site.getDescription() + "\nNumber of URLs pointing to this URL:" + site.getNumUrls() + "\n\n";
+            response.append("URL:").append(site.getUrl()).append("\nTitle:").append(site.getTitle()).append("\nDescription:").append(site.getDescription()).append("\nNumber of URLs pointing to this URL:").append(site.getNumUrls()).append("\n\n");
         }
 
         int var = numresults / 10 + 1;
@@ -75,22 +68,17 @@ public class Barrel implements BarrelInterface {
             var--;
         }
 
-        response += "Page " + (page_number + 1) + "/" + var + " Number of results: " + numresults;
+        response.append("Page ").append(page_number + 1).append("/").append(var).append(" Number of results: ").append(numresults);
 
-        return response;
+        return response.toString();
 
     }
 
     /**
      * Get link info
-     *
-     * @param url
-     * @return
-     * @throws FileNotFoundException
-     * @throws IOException
      */
     @Override
-    public String linkInfo(String url) throws FileNotFoundException, IOException {
+    public String linkInfo(String url) {
         if (urls.containsKey(url)) {
             SiteInfo site = urls.get(url);
             return "Number of URLs pointing to this URL:" + site.getUrls().size() + "\nTitle:"
@@ -103,22 +91,14 @@ public class Barrel implements BarrelInterface {
 
 
     /**
-     * @param info
+     *
      */
     private void parser(String info) {
         // chave1 | valor1; chave2 | valor2
         // exemplo:
         // type | url; url | www.uc.pt; title | DEI; description | DEI é fixe; referenced_urls | www.google.com www.facebook.com; words | DEI UC;
-        String[] parts = info.split(";");
+        HashMap<String, String> dici = getDici(info);
 
-        HashMap<String, String> dici = new HashMap<String, String>();
-
-        for (String part : parts) {
-            String[] key_value_pair = part.split("\\|");
-            if (key_value_pair.length == 2) {
-                dici.put(key_value_pair[0].trim(), key_value_pair[1].trim());
-            }
-        }
         if (dici.containsKey("type")) {
             if (dici.get("type").equals("url") && dici.containsKey("url")) {
                 SiteInfo site = new SiteInfo();
@@ -152,7 +132,7 @@ public class Barrel implements BarrelInterface {
                         if (words.containsKey(word)) {
                             words.get(word).add(site.getUrl());
                         } else {
-                            HashSet<String> urlsaux = new HashSet<String>();
+                            HashSet<String> urlsaux = new HashSet<>();
                             urlsaux.add(site.getUrl());
                             words.put(word, urlsaux);
                         }
@@ -172,6 +152,7 @@ public class Barrel implements BarrelInterface {
             }
         }
     }
+
 
     public void start() {
         try {

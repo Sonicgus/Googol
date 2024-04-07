@@ -10,6 +10,8 @@ import java.rmi.registry.Registry;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import static pt.uc.ga.FuncLib.getDici;
+
 public class Gateway implements GatewayInterface {
     private final HashMap<String, Long> searches;
     private long avgtime;
@@ -110,40 +112,36 @@ public class Gateway implements GatewayInterface {
      */
     @Override
     public String search(HashSet<String> keywords, int page_number) throws RemoteException {
+        long start = System.currentTimeMillis();
 
         BarrelInterface b;
-        try {
-            b = getRandomBarrel();
+        while (true) {
+            try {
+                b = getRandomBarrel();
 
-        } catch (Exception e) {
-            System.out.println("Exception in search: " + e);
-            e.printStackTrace();
-            return "Falha ao comunicar com barrels";
-        }
+                String res = b.search(keywords, page_number);
+                StringBuilder search = new StringBuilder();
 
-        try {
-            StringBuilder search = new StringBuilder();
-            for (String keyword : keywords) {
-                search.append(keyword).append(" ");
+
+                for (String keyword : keywords) {
+                    search.append(keyword).append(" ");
+                }
+                if (searches.containsKey(search.toString())) {
+                    searches.put(search.toString(), searches.get(search.toString()) + 1);
+                } else {
+                    searches.put(search.toString(), 1L);
+                }
+
+                long end = System.currentTimeMillis();
+
+                calculateAvg(end - start);
+                return res;
+            } catch (ConnectException e) {
+                System.out.println("Barrel is down: " + e.getMessage());
+
+            } catch (Exception e) {
+                System.out.println("Exception in search: " + e);
             }
-            if (searches.containsKey(search.toString())) {
-                searches.put(search.toString(), searches.get(search.toString()) + 1);
-            } else {
-                searches.put(search.toString(), 1L);
-            }
-
-            //start time
-            long start = System.currentTimeMillis();
-            String res = b.search(keywords, page_number);
-            //end time
-            long end = System.currentTimeMillis();
-
-            calculateAvg(end - start);
-            return res;
-        } catch (Exception e) {
-            System.out.println("Exception in search: " + e);
-            e.printStackTrace();
-            return "Falha ao comunicar com barrels function searchBarrel";
         }
     }
 
@@ -176,9 +174,9 @@ public class Gateway implements GatewayInterface {
      *
      */
     @Override
-    public String admin(boolean wait) throws RemoteException {
+    public String getAdminPage(boolean wait) throws RemoteException {
         if (!wait) {
-            return admininfo();
+            return getAdminInfo();
         }
 
         byte[] buf = new byte[1024];
@@ -199,18 +197,12 @@ public class Gateway implements GatewayInterface {
                 // Imprimir a mensagem recebida
                 String received = new String(packet.getData(), 0, packet.getLength());
                 //check if the message is for admin
-                HashMap<String, String> dici = new HashMap<>();
-                String[] messages = received.split(";");
-                for (String message : messages) {
-                    String[] parts = message.split("\\|");
-                    if (parts.length == 2) {
-                        dici.put(parts[0].trim(), parts[1].trim());
-                    }
-                }
+                HashMap<String, String> dici = getDici(received);
+
                 if (dici.containsKey("type") && dici.get("type").equals("adminupdated")) {
                     socket.leaveGroup(groupAddress, networkInterface);
                     socket.close();
-                    return admininfo();
+                    return getAdminInfo();
                 }
             }
 
@@ -220,7 +212,7 @@ public class Gateway implements GatewayInterface {
         return "Error";
     }
 
-    private String admininfo() {
+    private String getAdminInfo() {
         HashMap<String, Long> copysearches = new HashMap<>(searches);
         //add all searches to searchss
         //and than add to response the top 10
@@ -230,14 +222,9 @@ public class Gateway implements GatewayInterface {
             //get barrels list. all start with "barrel"
             String[] list = registry.list();
             //only get Strings starting with the word barrel
-            HashSet<String> barrelsList = new HashSet<>();
             for (String s : list) {
-                if (s.startsWith("barrel")) {
-                    barrelsList.add(s);
-                }
-            }
-            for (String barrel : barrelsList) {
-                response.append(barrel).append("\n");
+                if (s.startsWith("barrel"))
+                    response.append(s).append("\n");
             }
         } catch (RemoteException e) {
             e.printStackTrace();
