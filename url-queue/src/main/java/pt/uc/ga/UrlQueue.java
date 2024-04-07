@@ -23,6 +23,11 @@ public class UrlQueue {
     public UrlQueue(int PORT_A, int PORT_B) {
         queueSend = new SendQueueTask(PORT_A, this);
         queueReceive = new ReceiveQueueTask(PORT_B, this);
+    }
+
+    public UrlQueue(int PORT_A, int PORT_B, String initialUrl) {
+        queueSend = new SendQueueTask(PORT_A, this);
+        queueReceive = new ReceiveQueueTask(PORT_B, this);
 
         initialUrl = "https://www.uc.pt/";
     }
@@ -60,7 +65,8 @@ public class UrlQueue {
         } catch (IOException | ClassNotFoundException i) {
             queue = new LinkedList<>();
             visited = new HashSet<>();
-            addUrl(initialUrl, false);
+            if (initialUrl != null)
+                addUrl(initialUrl, false);
 
         }
     }
