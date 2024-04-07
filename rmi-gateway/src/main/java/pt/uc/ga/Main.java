@@ -6,7 +6,15 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Scanner;
 
+/**
+ * Main class that starts the Gateway server.
+ */
 public class Main {
+    /**
+     * Main method that starts the Gateway server.
+     *
+     * @param args
+     */
     public static void main(String[] args) {
 
         if (args.length != 5) {

@@ -12,6 +12,9 @@ import java.util.HashSet;
 import static pt.uc.ga.FuncLib.getDici;
 import static pt.uc.ga.FuncLib.getKeywordsSet;
 
+/**
+ * Gateway class
+ */
 public class Gateway implements IGateway {
     private HashMap<String, Long> searches;
     private long avgtime;
@@ -23,7 +26,15 @@ public class Gateway implements IGateway {
     private final String RMI_HOST;
     private final int RMI_GATEWAY_PORT;
 
-
+    /**
+     * Gateway constructor
+     *
+     * @param MULTICAST_ADDRESS
+     * @param MULTICAST_PORT
+     * @param PORT_B
+     * @param RMI_HOST
+     * @param RMI_GATEWAY_PORT
+     */
     public Gateway(String MULTICAST_ADDRESS, int MULTICAST_PORT, int PORT_B, String RMI_HOST, int RMI_GATEWAY_PORT) {
         this.MULTICAST_PORT = MULTICAST_PORT;
         this.MULTICAST_ADDRESS = MULTICAST_ADDRESS;
@@ -37,7 +48,11 @@ public class Gateway implements IGateway {
 
 
     /**
+     * Add URL to the queue
      *
+     * @param url
+     * @return
+     * @throws RemoteException
      */
     @Override
     public String addLink(String url) throws RemoteException {
@@ -71,7 +86,11 @@ public class Gateway implements IGateway {
     }
 
     /**
+     * Get link info
      *
+     * @param url
+     * @return
+     * @throws RemoteException
      */
     @Override
     public String linkInfo(String url) throws RemoteException {
@@ -96,6 +115,9 @@ public class Gateway implements IGateway {
         }
     }
 
+    /**
+     * Get link info
+     */
     private void save() {
         //if the file does not exist, create a new urlsmap and wordsmap
         try {
@@ -109,6 +131,9 @@ public class Gateway implements IGateway {
         }
     }
 
+    /**
+     * load infos from object file
+     */
     private void load() {
         //if the file does not exist, create a new urlsmap and wordsmap
         try {
@@ -124,6 +149,9 @@ public class Gateway implements IGateway {
         }
     }
 
+    /**
+     * Notify gateway
+     */
     private void notifyGateway() {
         //send avg to multicast
         try {
@@ -147,6 +175,11 @@ public class Gateway implements IGateway {
         }
     }
 
+    /**
+     * Calculate average time
+     *
+     * @param time
+     */
     private synchronized void calculateAvg(long time) {
         avgtime = (avgtime * num_searches + time) / (num_searches + 1);
         num_searches++;
@@ -156,7 +189,12 @@ public class Gateway implements IGateway {
     }
 
     /**
+     * Search
      *
+     * @param keywords
+     * @param page_number
+     * @return
+     * @throws RemoteException
      */
     @Override
     public String search(String keywords, int page_number) throws RemoteException {
@@ -194,7 +232,9 @@ public class Gateway implements IGateway {
 
 
     /**
+     * Get random barrel
      *
+     * @return
      */
     public IBarrel getRandomBarrel() {
         while (true) {
@@ -226,7 +266,11 @@ public class Gateway implements IGateway {
     }
 
     /**
+     * Get admin page
      *
+     * @param wait
+     * @return
+     * @throws RemoteException
      */
     @Override
     public String getAdminPage(boolean wait) throws RemoteException {
@@ -266,6 +310,11 @@ public class Gateway implements IGateway {
         return "Error";
     }
 
+    /**
+     * Get admin info
+     *
+     * @return
+     */
     private String getAdminInfo() {
         HashMap<String, Long> copysearches = new HashMap<>(searches);
         //add all searches to searchss

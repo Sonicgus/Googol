@@ -6,6 +6,9 @@ import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+/**
+ * Task to receive urls from the crawler.
+ */
 public class ReceiveQueueTask implements Runnable {
 
     private ServerSocket serverSocket;
@@ -13,6 +16,12 @@ public class ReceiveQueueTask implements Runnable {
     Socket socket;
     BufferedReader in;
 
+    /**
+     * Constructor.
+     *
+     * @param port
+     * @param urlQueue
+     */
     public ReceiveQueueTask(int port, UrlQueue urlQueue) {
         this.urlQueue = urlQueue;
         try {
@@ -24,7 +33,9 @@ public class ReceiveQueueTask implements Runnable {
 
     }
 
-
+    /**
+     * Run method to receive urls from the crawler.
+     */
     @Override
     public void run() {
         while (true) {

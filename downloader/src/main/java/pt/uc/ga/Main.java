@@ -1,6 +1,14 @@
 package pt.uc.ga;
 
+/**
+ * Main class
+ */
 public class Main {
+    /**
+     * Main method
+     *
+     * @param args
+     */
     public static void main(String[] args) {
         if (args.length != 6) {
             System.out.println("Usage: java -jar downloader.jar <PORT_A> <PORT_B> <MULTICAST_ADDRESS> <MULTICAST_PORT> <MAXIMUM_REFERENCE_LINKS> <HOST_ADRESS>");

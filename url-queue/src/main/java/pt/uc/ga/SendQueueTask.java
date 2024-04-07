@@ -5,6 +5,9 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+/**
+ * Task to send urls to the crawler.
+ */
 public class SendQueueTask implements Runnable {
     private ServerSocket serverSocket;
 
@@ -20,6 +23,9 @@ public class SendQueueTask implements Runnable {
     }
 
 
+    /**
+     * Run method to send urls to the crawler.
+     */
     @Override
     public void run() {
         while (true) {
@@ -31,6 +37,11 @@ public class SendQueueTask implements Runnable {
         }
     }
 
+    /**
+     * Send url to the crawler.
+     *
+     * @throws IOException
+     */
     private void sendUrl() throws IOException {
         String url;
         url = urlQueue.getUrl();

@@ -14,6 +14,9 @@ import java.util.HashSet;
 
 import static pt.uc.ga.FuncLib.getKeywordsSet;
 
+/**
+ * Class that downloads a webpage and sends the information to barrels
+ */
 public class Downloader {
     private String url;
     private Document doc;
@@ -30,6 +33,16 @@ public class Downloader {
 
     private final String HOST_ADDRESS;
 
+    /**
+     * Constructor
+     *
+     * @param PORT_A
+     * @param PORT_B
+     * @param MULTICAST_ADDRESS
+     * @param MULTICAST_PORT
+     * @param MAXIMUM_REFERENCE_LINKS
+     * @param HOST_ADDRESS
+     */
     public Downloader(int PORT_A, int PORT_B, String MULTICAST_ADDRESS, int MULTICAST_PORT, int MAXIMUM_REFERENCE_LINKS, String HOST_ADDRESS) {
 
         this.links = new HashSet<>();
@@ -43,7 +56,7 @@ public class Downloader {
     }
 
     /**
-     *
+     * Method that starts the downloader
      */
     public void start() {
         System.out.println("Downloader started");
@@ -83,8 +96,7 @@ public class Downloader {
             try {
                 filter();
 
-                sendWords();
-                sendUrl();
+                sendUrlInfo();
                 sendLinkToQueue(false);
 
             } catch (Exception e) {
@@ -99,27 +111,14 @@ public class Downloader {
         }
     }
 
-    private void sendUrl() {
-        try {
-            InetAddress group = InetAddress.getByName(this.MULTICAST_ADDRESS);
-            MulticastSocket socket = new MulticastSocket(this.MULTICAST_PORT);
 
-            String urlString = "type | url; item_count | 1; url | " + this.url + "; title | " + this.title
-                    + "; description | " + this.description;
-
-            byte[] buffer = urlString.getBytes();
-
-            DatagramPacket packet = new DatagramPacket(buffer, buffer.length, group, this.MULTICAST_PORT);
-            socket.send(packet);
-            socket.close();
-        } catch (IOException e) {
-            System.err.println("Failed to send URL to admin for Downloader");
-        }
-    }
-
-
-    private void sendWords() throws IOException {
-        String info = getInfo();
+    /**
+     * Method that sends the words to the barrels
+     *
+     * @throws IOException
+     */
+    private void sendUrlInfo() throws IOException {
+        String info = getUrlInfo();
 
 
         InetAddress group = InetAddress.getByName(this.MULTICAST_ADDRESS);
@@ -139,7 +138,12 @@ public class Downloader {
         socket.close();
     }
 
-    private String getInfo() {
+    /**
+     * Method that gets the information of the page
+     *
+     * @return
+     */
+    private String getUrlInfo() {
         StringBuilder info = new StringBuilder("type | url; url | " + this.url);
 
         if (this.title != null)
@@ -167,6 +171,9 @@ public class Downloader {
         return info.toString();
     }
 
+    /**
+     * Method that clears the variables
+     */
     private void clear() {
         this.links.clear();
         this.wordsmap.clear();
@@ -174,6 +181,12 @@ public class Downloader {
         this.description = "";
     }
 
+    /**
+     * Method that sends the link to the queue
+     *
+     * @param resend
+     * @throws InterruptedException
+     */
     private void sendLinkToQueue(boolean resend) throws InterruptedException {
         while (true) {
             try {
@@ -196,7 +209,9 @@ public class Downloader {
         }
     }
 
-
+    /**
+     * Method that filters the page
+     */
     private void filter() {
 
         String title;
@@ -231,11 +246,22 @@ public class Downloader {
         }
     }
 
+    /**
+     * Method that removes illegal characters
+     *
+     * @param str
+     * @return
+     */
     private String removeIlegalCharacters(String str) {
         return str.replace("|", "").replace(";", "").replace("\n", "");
     }
 
-
+    /**
+     * Method that gets the URL
+     *
+     * @return
+     * @throws InterruptedException
+     */
     private String getUrl() throws InterruptedException {
         while (true) {
             try {

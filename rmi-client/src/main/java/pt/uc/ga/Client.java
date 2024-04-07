@@ -5,6 +5,9 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.Scanner;
 
+/**
+ * Client class that interacts with the Gateway
+ */
 public class Client {
     private IGateway g;
     private final Scanner scanner;
@@ -15,6 +18,9 @@ public class Client {
     private final int RMI_GATEWAY_PORT;
 
 
+    /**
+     * Thread that prints the admin page in real time
+     */
     class AdminThread extends Thread {
         public void run() {
             while (true) {
@@ -42,6 +48,12 @@ public class Client {
         }
     }
 
+    /**
+     * Constructor
+     *
+     * @param RMI_HOST
+     * @param RMI_GATEWAY_PORT
+     */
     public Client(String RMI_HOST, int RMI_GATEWAY_PORT) {
 
         scanner = new Scanner(System.in);
@@ -56,6 +68,9 @@ public class Client {
         t.start();
     }
 
+    /**
+     * Get the Gateway object
+     */
     private void getGateway() {
         while (true) {
             try {
@@ -73,6 +88,9 @@ public class Client {
         }
     }
 
+    /**
+     *
+     */
     public static void printMenu() {
         System.out.println("Choose an option:");
         System.out.println("1. Indexar novo URL introduzido por utilizador ");
@@ -83,7 +101,9 @@ public class Client {
         System.out.print("Escolha:");
     }
 
-
+    /**
+     * Index a new URL
+     */
     private void indexUrl() {
         String url;
         do {
@@ -99,6 +119,9 @@ public class Client {
         }
     }
 
+    /**
+     * Search for web pages with certain keywords
+     */
     private void search() {
         try {
             int currentPage = 0;
@@ -142,6 +165,12 @@ public class Client {
 
     }
 
+    /**
+     * Check if the URL is valid
+     *
+     * @param url
+     * @return
+     */
     private boolean isUrl(String url) {
         if (url == null) {
             return false;
@@ -149,6 +178,9 @@ public class Client {
             return url.matches("^(http|https)://.*$");
     }
 
+    /**
+     * Get the links that point to a specific page
+     */
     private void getLinkInfo() {
         System.out.println("Enter the link to search: ");
         String link = scanner.nextLine();
@@ -161,6 +193,9 @@ public class Client {
 
     }
 
+    /**
+     * Start the client
+     */
     public void start() {
 
         while (true) {

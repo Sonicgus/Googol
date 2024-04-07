@@ -3,6 +3,9 @@ package pt.uc.ga;
 import java.io.Serial;
 import java.util.HashSet;
 
+/**
+ * Class that represents the information of a site.
+ */
 public class SiteInfo implements java.io.Serializable {
 
     @Serial
@@ -14,13 +17,15 @@ public class SiteInfo implements java.io.Serializable {
     private String url;
 
 
+    /**
+     * Constructor of the class.
+     */
     public SiteInfo() {
         this.url = "";
         this.title = "";
         this.description = "";
         this.urls = new HashSet<>();
     }
-
 
     public String getTitle() {
         return title;

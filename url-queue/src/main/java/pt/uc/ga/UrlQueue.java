@@ -5,6 +5,9 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
 
+/**
+ * URL queue.
+ */
 public class UrlQueue {
     private LinkedList<String> queue;
     private Set<String> visited;
@@ -15,13 +18,23 @@ public class UrlQueue {
     String initialUrl;
 
     /**
-     * Constructor for the UrlQueue class
+     * Constructor.
+     *
+     * @param PORT_A
+     * @param PORT_B
      */
     public UrlQueue(int PORT_A, int PORT_B) {
         queueSend = new SendQueueTask(PORT_A, this);
         queueReceive = new ReceiveQueueTask(PORT_B, this);
     }
 
+    /**
+     * Constructor.
+     *
+     * @param PORT_A
+     * @param PORT_B
+     * @param initialUrl
+     */
     public UrlQueue(int PORT_A, int PORT_B, String initialUrl) {
         queueSend = new SendQueueTask(PORT_A, this);
         queueReceive = new ReceiveQueueTask(PORT_B, this);
@@ -30,7 +43,7 @@ public class UrlQueue {
     }
 
     /**
-     * Start the URL queue
+     * Start the URL queue.
      */
     public void start() {
         load();
@@ -59,6 +72,9 @@ public class UrlQueue {
     }
 
 
+    /**
+     * Load the URL queue and visited from obj files.
+     */
     public void load() {
         try {
             FileInputStream fileIn = new FileInputStream("urlqueue.ser");
@@ -76,7 +92,9 @@ public class UrlQueue {
         }
     }
 
-
+    /**
+     * Save the URL queue and visited to obj files.
+     */
     public void save() {
         try {
             FileOutputStream fileOut = new FileOutputStream("urlqueue.ser");
@@ -90,6 +108,11 @@ public class UrlQueue {
         }
     }
 
+    /**
+     * Get the next URL from the queue.
+     *
+     * @return
+     */
     public synchronized String getUrl() {
         String url = queue.poll();
         save();

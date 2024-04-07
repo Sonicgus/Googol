@@ -1,6 +1,14 @@
 package pt.uc.ga;
 
+/**
+ * Main class to start the UrlQueue.
+ */
 public class Main {
+    /**
+     * Main method to start the UrlQueue.
+     *
+     * @param args Command line arguments.
+     */
     public static void main(String[] args) {
         if (args.length != 2 && args.length != 3) {
             System.out.println("Usage: java -jar url-queue.jar <port-a> <port-b>");

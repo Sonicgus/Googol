@@ -12,6 +12,9 @@ import java.util.List;
 
 import static pt.uc.ga.FuncLib.getDici;
 
+/**
+ * Barrel class
+ */
 public class Barrel implements IBarrel {
     private final int id;
     private HashMap<String, HashSet<String>> words;
@@ -23,7 +26,15 @@ public class Barrel implements IBarrel {
     public static String RMI_HOST;
     public static int RMI_GATEWAY_PORT;
 
-
+    /**
+     * Constructor
+     *
+     * @param id                barrel id
+     * @param MULTICAST_ADDRESS multicast address
+     * @param MULTICAST_PORT    multicast port
+     * @param RMI_HOST          RMI host
+     * @param RMI_GATEWAY_PORT  RMI gateway port
+     */
     public Barrel(int id, String MULTICAST_ADDRESS, int MULTICAST_PORT, String RMI_HOST, int RMI_GATEWAY_PORT) {
         this.id = id;
         Barrel.MULTICAST_ADDRESS = MULTICAST_ADDRESS;
@@ -36,7 +47,11 @@ public class Barrel implements IBarrel {
     }
 
     /**
-     * Search pages by keywords
+     * Search for site with certain keywords
+     *
+     * @param keywords    keywords
+     * @param page_number page number
+     * @return search results
      */
     @Override
     public String search(HashSet<String> keywords, int page_number) {
@@ -84,7 +99,10 @@ public class Barrel implements IBarrel {
     }
 
     /**
-     * Get link info
+     * Get link info such as number of URLs pointing to this URL, title, description, URLs pointing to this URL
+     *
+     * @param url url
+     * @return a string with information about the link
      */
     @Override
     public String linkInfo(String url) {
@@ -98,13 +116,18 @@ public class Barrel implements IBarrel {
         return "URL not found";
     }
 
+    /**
+     * function to check if the barrel is alive
+     */
     @Override
     public void ping() {
     }
 
 
     /**
+     * Parse the information received from the multicast
      *
+     * @param info received information
      */
     private void parser(String info) {
         // chave1 | valor1; chave2 | valor2
@@ -165,6 +188,9 @@ public class Barrel implements IBarrel {
         }
     }
 
+    /**
+     * Save the urlsmap and wordsmap to a object file
+     */
     public void save() {
         try {
             FileOutputStream fileOut = new FileOutputStream("barrel" + id + ".ser");
@@ -178,6 +204,9 @@ public class Barrel implements IBarrel {
         }
     }
 
+    /**
+     *
+     */
     public void load() {
         try {
             FileInputStream fileIn = new FileInputStream("barrel" + id + ".ser");
@@ -193,7 +222,9 @@ public class Barrel implements IBarrel {
         }
     }
 
-
+    /**
+     * Start the barrel
+     */
     public void start() {
         try {
             IBarrel stub = (IBarrel) UnicastRemoteObject.exportObject(this, 0);
