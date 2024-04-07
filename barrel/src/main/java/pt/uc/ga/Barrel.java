@@ -12,7 +12,7 @@ import java.util.List;
 
 import static pt.uc.ga.FuncLib.getDici;
 
-public class Barrel implements BarrelInterface {
+public class Barrel implements IBarrel {
     private final int id;
     private final HashMap<String, HashSet<String>> words;
     private final HashMap<String, SiteInfo> urls;
@@ -156,7 +156,7 @@ public class Barrel implements BarrelInterface {
 
     public void start() {
         try {
-            BarrelInterface stub = (BarrelInterface) UnicastRemoteObject.exportObject(this, 0);
+            IBarrel stub = (IBarrel) UnicastRemoteObject.exportObject(this, 0);
             Registry registry = LocateRegistry.getRegistry(Configuration.RMI_HOST, Configuration.RMI_GATEWAY_PORT);
 
             registry.rebind("barrel" + id, stub);

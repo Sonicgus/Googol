@@ -13,7 +13,7 @@ import java.util.HashSet;
 import static pt.uc.ga.FuncLib.getDici;
 import static pt.uc.ga.FuncLib.getKeywordsSet;
 
-public class Gateway implements GatewayInterface {
+public class Gateway implements IGateway {
     private final HashMap<String, Long> searches;
     private long avgtime;
     private long num_searches;
@@ -64,7 +64,7 @@ public class Gateway implements GatewayInterface {
      */
     @Override
     public String linkInfo(String url) throws RemoteException {
-        BarrelInterface b;
+        IBarrel b;
         try {
             b = getRandomBarrel();
 
@@ -117,7 +117,7 @@ public class Gateway implements GatewayInterface {
 
         HashSet<String> keywords_set = getKeywordsSet(keywords);
 
-        BarrelInterface b;
+        IBarrel b;
         while (true) {
             try {
                 b = getRandomBarrel();
@@ -149,7 +149,7 @@ public class Gateway implements GatewayInterface {
     /**
      *
      */
-    public BarrelInterface getRandomBarrel() {
+    public IBarrel getRandomBarrel() {
         while (true) {
             try {
                 Registry registry = LocateRegistry.getRegistry(Configuration.RMI_HOST, Configuration.RMI_GATEWAY_PORT);
@@ -164,7 +164,7 @@ public class Gateway implements GatewayInterface {
                 }
                 //get a random barrel
                 String randomBarrel = (String) barrelsList.toArray()[(int) (Math.random() * barrelsList.size())];
-                return (BarrelInterface) registry.lookup(randomBarrel);
+                return (IBarrel) registry.lookup(randomBarrel);
             } catch (RemoteException | NotBoundException e) {
                 throw new RuntimeException(e);
             }
