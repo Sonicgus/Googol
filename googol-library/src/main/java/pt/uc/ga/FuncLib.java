@@ -20,7 +20,7 @@ public class FuncLib {
     }
 
     public static HashSet<String> getKeywordsSet(String keywords) {
-        // Split keywords and lowercase them
+        // split keywords and lowercase them
         keywords = keywords.toLowerCase();
 
         keywords = keywords.replaceAll("[^a-z0-9 ]", "");

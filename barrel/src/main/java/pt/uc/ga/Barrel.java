@@ -165,9 +165,7 @@ public class Barrel implements IBarrel {
         }
     }
 
-    //function to save the urlsmap and wordsmap to a object file
     public void save() {
-        //if the file does not exist, create a new urlsmap and wordsmap
         try {
             FileOutputStream fileOut = new FileOutputStream("barrel" + id + ".ser");
             ObjectOutputStream out = new ObjectOutputStream(fileOut);
@@ -180,10 +178,7 @@ public class Barrel implements IBarrel {
         }
     }
 
-    //function to load the urlsmap and wordsmap from a object file
     public void load() {
-
-        //if the file does not exist, create a new urlsmap and wordsmap
         try {
             FileInputStream fileIn = new FileInputStream("barrel" + id + ".ser");
             ObjectInputStream in = new ObjectInputStream(fileIn);
@@ -192,6 +187,7 @@ public class Barrel implements IBarrel {
             in.close();
             fileIn.close();
         } catch (IOException | ClassNotFoundException i) {
+            //if the file does not exist, create a new urlsmap and wordsmap
             urls = new HashMap<>();
             words = new HashMap<>();
         }
@@ -220,30 +216,28 @@ public class Barrel implements IBarrel {
 
         byte[] buf = new byte[1024];
         try {
-            // Criação do socket de multicast
+            // criar socket
             MulticastSocket socket = new MulticastSocket(MULTICAST_PORT);
 
-            // Junta-se ao grupo de multicast
+            // juntar ao grupo de multicast
             InetAddress group = InetAddress.getByName(MULTICAST_ADDRESS);
             NetworkInterface networkInterface = NetworkInterface.getByInetAddress(group);
             InetSocketAddress groupAddress = new InetSocketAddress(group, MULTICAST_PORT);
             socket.joinGroup(groupAddress, networkInterface);
             System.out.println("Barrel " + id + " started");
             while (true) {
-                // Receber a mensagem de multicast
+                // receber a mensagem de multicast
                 DatagramPacket packet = new DatagramPacket(buf, buf.length);
                 socket.receive(packet);
 
-                // Imprimir a mensagem recebida
                 String received = new String(packet.getData(), 0, packet.getLength());
                 if (received.equals("exit")) {
                     break;
                 }
 
-                // System.out.println("Mensagem de multicast recebida: " + received);
                 parser(received);
             }
-            // Sair do grupo de multicast e fechar o socket
+            // sair do grupo de multicast e fechar o socket
             socket.leaveGroup(groupAddress, networkInterface);
             socket.close();
         } catch (IOException e) {

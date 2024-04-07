@@ -43,7 +43,7 @@ public class Gateway implements IGateway {
     public String addLink(String url) throws RemoteException {
         System.out.println("Received URL from client: " + url);
 
-        // Adiciona o URL à fila
+        // adiciona o URL à fila
         Socket socket = null;
         PrintWriter out = null;
         try {
@@ -127,10 +127,10 @@ public class Gateway implements IGateway {
     private void notifyGateway() {
         //send avg to multicast
         try {
-            // Criação do socket de multicast
+            // criação socket de multicast
             MulticastSocket socket = new MulticastSocket(this.MULTICAST_PORT);
 
-            // Junta-se ao grupo de multicast
+            // junta ao grupo multicast
             InetAddress group = InetAddress.getByName(this.MULTICAST_ADDRESS);
             NetworkInterface networkInterface = NetworkInterface.getByInetAddress(group);
             InetSocketAddress groupAddress = new InetSocketAddress(group, this.MULTICAST_PORT);
@@ -236,20 +236,19 @@ public class Gateway implements IGateway {
 
         byte[] buf = new byte[1024];
         try {
-            // Criação do socket de multicast
+            // criar socket multicast
             MulticastSocket socket = new MulticastSocket(this.MULTICAST_PORT);
 
-            // Junta-se ao grupo de multicast
+            // junta ao grupo multicast
             InetAddress group = InetAddress.getByName(this.MULTICAST_ADDRESS);
             NetworkInterface networkInterface = NetworkInterface.getByInetAddress(group);
             InetSocketAddress groupAddress = new InetSocketAddress(group, this.MULTICAST_PORT);
             socket.joinGroup(groupAddress, networkInterface);
             while (true) {
-                // Receber a mensagem de multicast
+                // receber a mensagem de multicast
                 DatagramPacket packet = new DatagramPacket(buf, buf.length);
                 socket.receive(packet);
 
-                // Imprimir a mensagem recebida
                 String received = new String(packet.getData(), 0, packet.getLength());
                 //check if the message is for admin
                 HashMap<String, String> dici = getDici(received);

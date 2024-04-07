@@ -28,7 +28,9 @@ public class Downloader {
     private final int MULTICAST_PORT;
     private final int MAXIMUM_REFERENCE_LINKS;
 
-    public Downloader(int PORT_A, int PORT_B, String MULTICAST_ADDRESS, int MULTICAST_PORT, int MAXIMUM_REFERENCE_LINKS) {
+    private final String HOST_ADDRESS;
+
+    public Downloader(int PORT_A, int PORT_B, String MULTICAST_ADDRESS, int MULTICAST_PORT, int MAXIMUM_REFERENCE_LINKS, String HOST_ADDRESS) {
 
         this.links = new HashSet<>();
         this.wordsmap = new HashSet<>();
@@ -37,6 +39,7 @@ public class Downloader {
         this.MULTICAST_ADDRESS = MULTICAST_ADDRESS;
         this.MULTICAST_PORT = MULTICAST_PORT;
         this.MAXIMUM_REFERENCE_LINKS = MAXIMUM_REFERENCE_LINKS;
+        this.HOST_ADDRESS = HOST_ADDRESS;
     }
 
     /**
@@ -174,7 +177,7 @@ public class Downloader {
     private void sendLinkToQueue(boolean resend) throws InterruptedException {
         while (true) {
             try {
-                Socket socket = new Socket("localhost", this.PORT_B);
+                Socket socket = new Socket(HOST_ADDRESS, this.PORT_B);
                 PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 
                 for (String link : links) {
@@ -236,7 +239,7 @@ public class Downloader {
     private String getUrl() throws InterruptedException {
         while (true) {
             try {
-                Socket socket = new Socket("localhost", this.PORT_A);
+                Socket socket = new Socket(HOST_ADDRESS, this.PORT_A);
                 BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 String url = in.readLine();
                 socket.close();
