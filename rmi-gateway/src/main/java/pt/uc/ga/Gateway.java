@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import static pt.uc.ga.FuncLib.getDici;
+import static pt.uc.ga.FuncLib.getKeywordsSet;
 
 public class Gateway implements GatewayInterface {
     private final HashMap<String, Long> searches;
@@ -111,19 +112,21 @@ public class Gateway implements GatewayInterface {
      *
      */
     @Override
-    public String search(HashSet<String> keywords, int page_number) throws RemoteException {
+    public String search(String keywords, int page_number) throws RemoteException {
         long start = System.currentTimeMillis();
+
+        HashSet<String> keywords_set = getKeywordsSet(keywords);
 
         BarrelInterface b;
         while (true) {
             try {
                 b = getRandomBarrel();
 
-                String res = b.search(keywords, page_number);
+                String res = b.search(keywords_set, page_number);
                 StringBuilder search = new StringBuilder();
 
 
-                for (String keyword : keywords) {
+                for (String keyword : keywords_set) {
                     search.append(keyword).append(" ");
                 }
                 if (searches.containsKey(search.toString())) {
@@ -141,6 +144,7 @@ public class Gateway implements GatewayInterface {
             }
         }
     }
+
 
     /**
      *
@@ -212,7 +216,7 @@ public class Gateway implements GatewayInterface {
     private String getAdminInfo() {
         HashMap<String, Long> copysearches = new HashMap<>(searches);
         //add all searches to searchss
-        //and than add to response the top 10
+        //and then add to response the top 10
         StringBuilder response = new StringBuilder("\n\nActive Barrels:\n");
         try {
             Registry registry = LocateRegistry.getRegistry(Configuration.RMI_HOST, Configuration.RMI_GATEWAY_PORT);

@@ -12,12 +12,14 @@ import java.io.PrintWriter;
 import java.net.*;
 import java.util.HashSet;
 
+import static pt.uc.ga.FuncLib.getKeywordsSet;
+
 public class Downloader {
     private final int id;
     private String url;
     private Document doc;
     private final HashSet<String> links;
-    private final HashSet<String> wordsmap;
+    private HashSet<String> wordsmap;
     private String title;
     private String description;
 
@@ -214,11 +216,15 @@ public class Downloader {
         this.title = removeIlegalCharacters(title);
         this.description = doc.select("meta[name=description]").attr("content");
 
-        String[] words = doc.text().split(" ");
-
-        for (String word : words) {
-            wordsmap.add(removeIlegalCharacters(word));
+        String text;
+        try {
+            text = doc.text();
+        } catch (NullPointerException e) {
+            return;
         }
+
+        this.wordsmap = getKeywordsSet(text);
+
         Elements links;
         try {
             links = doc.select("a[href]");

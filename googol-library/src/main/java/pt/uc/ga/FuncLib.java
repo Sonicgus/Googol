@@ -1,6 +1,8 @@
 package pt.uc.ga;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 
 public class FuncLib {
     public static HashMap<String, String> getDici(String info) {
@@ -15,5 +17,14 @@ public class FuncLib {
             }
         }
         return dici;
+    }
+
+    public static HashSet<String> getKeywordsSet(String keywords) {
+        // Split keywords and lowercase them
+        keywords = keywords.toLowerCase();
+
+        keywords = keywords.replaceAll("[^a-z0-9 ]", "");
+
+        return new HashSet<>(Arrays.asList(keywords.split(" ")));
     }
 }

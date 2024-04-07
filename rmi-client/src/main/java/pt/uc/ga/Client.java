@@ -3,8 +3,6 @@ package pt.uc.ga;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Scanner;
 
 public class Client {
@@ -94,9 +92,7 @@ public class Client {
         try {
             int currentPage = 0;
             System.out.print("Enter the keyword to search: ");
-            String[] keywords_splited = scanner.nextLine().split(" ");
-
-            HashSet<String> keywords = new HashSet<>(Arrays.asList(keywords_splited));
+            String keywords = scanner.nextLine();
 
             System.out.println(g.search(keywords, currentPage));
             while (true) {
