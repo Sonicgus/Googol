@@ -9,10 +9,18 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
 
+        if (args.length != 5) {
+            System.out.println("Usage: java -jar rmi-gateway.jar <multicast_adress> <multicast_port> <PORT_B> <rmi-registry-name> <rmi-registry-port>");
+            System.exit(1);
+        }
+
+
         try {
-            Gateway g = new Gateway();
+            Gateway g = new Gateway(args[0], Integer.parseInt(args[1]), Integer.parseInt(args[2]), args[3], Integer.parseInt(args[4]));
             IGateway stub = (IGateway) UnicastRemoteObject.exportObject(g, 0);
-            Registry registry = LocateRegistry.createRegistry(Configuration.RMI_GATEWAY_PORT);
+
+            Registry registry = LocateRegistry.createRegistry(Integer.parseInt(args[4]));
+
             registry.rebind("googol", stub);
             System.out.println("Gateway Server ready.");
         } catch (RemoteException re) {

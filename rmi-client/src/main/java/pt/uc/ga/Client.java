@@ -11,6 +11,10 @@ public class Client {
     private boolean admin;
     private final Object lock;
 
+    private final String RMI_HOST;
+    private final int RMI_GATEWAY_PORT;
+
+
     class AdminThread extends Thread {
         public void run() {
             while (true) {
@@ -38,11 +42,15 @@ public class Client {
         }
     }
 
-    public Client() {
-        getGateway();
+    public Client(String RMI_HOST, int RMI_GATEWAY_PORT) {
+
         scanner = new Scanner(System.in);
         admin = false;
         lock = new Object();
+
+        this.RMI_HOST = RMI_HOST;
+        this.RMI_GATEWAY_PORT = RMI_GATEWAY_PORT;
+        getGateway();
 
         Thread t = new AdminThread();
         t.start();
@@ -51,7 +59,7 @@ public class Client {
     private void getGateway() {
         while (true) {
             try {
-                Registry registry = LocateRegistry.getRegistry(Configuration.RMI_HOST, Configuration.RMI_GATEWAY_PORT);
+                Registry registry = LocateRegistry.getRegistry(this.RMI_HOST, this.RMI_GATEWAY_PORT);
                 this.g = (IGateway) registry.lookup("googol");
                 return;
             } catch (Exception e) {

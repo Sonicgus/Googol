@@ -17,30 +17,22 @@ public class Gateway implements IGateway {
     private long avgtime;
     private long num_searches;
 
-    public Gateway() {
-        // read object file with searches, avgtime and num_searches
-        //verify if file exists
-        File file = new File("gateway.ser");
-        if (!file.exists()) {
-            this.searches = new HashMap<>();
-            this.avgtime = 0;
-            this.num_searches = 0;
-            try {
-                file.createNewFile();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        } else {
-            try {
-                ObjectInputStream ois = new ObjectInputStream(new FileInputStream("gateway.ser"));
-                searches = (HashMap<String, Long>) ois.readObject();
-                avgtime = (long) ois.readObject();
-                num_searches = (long) ois.readObject();
-                ois.close();
-            } catch (IOException | ClassNotFoundException e) {
-                System.out.println("Error reading object file: " + e.getMessage());
-            }
-        }
+    private int MULTICAST_PORT;
+    private String MULTICAST_ADDRESS;
+    private int PORT_B;
+    private String RMI_HOST;
+    private int RMI_GATEWAY_PORT;
+
+
+    public Gateway(String MULTICAST_ADDRESS, int MULTICAST_PORT, int PORT_B, String RMI_HOST, int RMI_GATEWAY_PORT) {
+        this.MULTICAST_PORT = MULTICAST_PORT;
+        this.MULTICAST_ADDRESS = MULTICAST_ADDRESS;
+        this.PORT_B = PORT_B;
+        this.RMI_HOST = RMI_HOST;
+        this.RMI_GATEWAY_PORT = RMI_GATEWAY_PORT;
+
+
+        load();
     }
 
 
@@ -55,7 +47,7 @@ public class Gateway implements IGateway {
         Socket socket = null;
         PrintWriter out = null;
         try {
-            socket = new Socket("localhost", Configuration.PORT_B);
+            socket = new Socket("localhost", this.PORT_B);
             out = new PrintWriter(socket.getOutputStream(), true);
 
             out.println(url);
@@ -102,10 +94,8 @@ public class Gateway implements IGateway {
         }
     }
 
-    private synchronized void calculateAvg(long time) {
-        avgtime = (avgtime * num_searches + time) / (num_searches + 1);
-        num_searches++;
-        //save object file with searches, avgtime and num_searches
+    private void save() {
+        //if the file does not exist, create a new urlsmap and wordsmap
         try {
             ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("gateway.ser"));
             oos.writeObject(searches);
@@ -115,20 +105,43 @@ public class Gateway implements IGateway {
         } catch (IOException e) {
             System.out.println("Error writing object file: " + e.getMessage());
         }
+    }
+
+    private void load() {
+        //if the file does not exist, create a new urlsmap and wordsmap
+        try {
+            ObjectInputStream ois = new ObjectInputStream(new FileInputStream("gateway.ser"));
+            searches = (HashMap<String, Long>) ois.readObject();
+            avgtime = (long) ois.readObject();
+            num_searches = (long) ois.readObject();
+            ois.close();
+        } catch (IOException | ClassNotFoundException e) {
+            this.searches = new HashMap<>();
+            this.avgtime = 0;
+            this.num_searches = 0;
+        }
+    }
+
+    private synchronized void calculateAvg(long time) {
+        avgtime = (avgtime * num_searches + time) / (num_searches + 1);
+        num_searches++;
+        //save object file with searches, avgtime and num_searches
+        save();
+
         //send avg to multicast
         try {
             // Criação do socket de multicast
-            MulticastSocket socket = new MulticastSocket(Configuration.MULTICAST_PORT);
+            MulticastSocket socket = new MulticastSocket(this.MULTICAST_PORT);
 
             // Junta-se ao grupo de multicast
-            InetAddress group = InetAddress.getByName(Configuration.MULTICAST_ADDRESS);
+            InetAddress group = InetAddress.getByName(this.MULTICAST_ADDRESS);
             NetworkInterface networkInterface = NetworkInterface.getByInetAddress(group);
-            InetSocketAddress groupAddress = new InetSocketAddress(group, Configuration.MULTICAST_PORT);
+            InetSocketAddress groupAddress = new InetSocketAddress(group, this.MULTICAST_PORT);
             socket.joinGroup(groupAddress, networkInterface);
             //send avg and top 10 to multicast
             String message = "type | adminupdated";
             byte[] buf = message.getBytes();
-            DatagramPacket packet = new DatagramPacket(buf, buf.length, group, Configuration.MULTICAST_PORT);
+            DatagramPacket packet = new DatagramPacket(buf, buf.length, group, this.MULTICAST_PORT);
             socket.send(packet);
             socket.leaveGroup(groupAddress, networkInterface);
             socket.close();
@@ -181,7 +194,7 @@ public class Gateway implements IGateway {
     public IBarrel getRandomBarrel() {
         while (true) {
             try {
-                Registry registry = LocateRegistry.getRegistry(Configuration.RMI_HOST, Configuration.RMI_GATEWAY_PORT);
+                Registry registry = LocateRegistry.getRegistry(this.RMI_HOST, this.RMI_GATEWAY_PORT);
                 //get barrels list. all start with "barrel"
                 String[] list = registry.list();
                 //only get Strings starting with the word barrel
@@ -219,12 +232,12 @@ public class Gateway implements IGateway {
         byte[] buf = new byte[1024];
         try {
             // Criação do socket de multicast
-            MulticastSocket socket = new MulticastSocket(Configuration.MULTICAST_PORT);
+            MulticastSocket socket = new MulticastSocket(this.MULTICAST_PORT);
 
             // Junta-se ao grupo de multicast
-            InetAddress group = InetAddress.getByName(Configuration.MULTICAST_ADDRESS);
+            InetAddress group = InetAddress.getByName(this.MULTICAST_ADDRESS);
             NetworkInterface networkInterface = NetworkInterface.getByInetAddress(group);
-            InetSocketAddress groupAddress = new InetSocketAddress(group, Configuration.MULTICAST_PORT);
+            InetSocketAddress groupAddress = new InetSocketAddress(group, this.MULTICAST_PORT);
             socket.joinGroup(groupAddress, networkInterface);
             while (true) {
                 // Receber a mensagem de multicast
@@ -255,7 +268,7 @@ public class Gateway implements IGateway {
         //and then add to response the top 10
         StringBuilder response = new StringBuilder("\n\nActive Barrels:\n");
         try {
-            Registry registry = LocateRegistry.getRegistry(Configuration.RMI_HOST, Configuration.RMI_GATEWAY_PORT);
+            Registry registry = LocateRegistry.getRegistry(this.RMI_HOST, this.RMI_GATEWAY_PORT);
             //get barrels list. all start with "barrel"
             String[] list = registry.list();
             //only get Strings starting with the word barrel

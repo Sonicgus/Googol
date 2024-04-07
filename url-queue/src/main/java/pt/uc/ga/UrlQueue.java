@@ -9,41 +9,29 @@ public class UrlQueue {
     private LinkedList<String> queue;
     private Set<String> visited;
 
+    private int PORT_A;
+    private int PORT_B;
+
+    SendQueueTask queueSend;
+    ReceiveQueueTask queueReceive;
+
+    String initialUrl;
+
     /**
      * Constructor for the UrlQueue class
      */
-    public UrlQueue() {
+    public UrlQueue(int PORT_A, int PORT_B) {
+        queueSend = new SendQueueTask(PORT_A, this);
+        queueReceive = new ReceiveQueueTask(PORT_B, this);
 
-        //read objet file with visited urls and urls queue
-        File file = new File("queue.ser");
-        if (!file.exists()) {
-            queue = new LinkedList<>();
-            visited = new HashSet<>();
-            String initialUrl = "https://www.uc.pt/";
-            addUrl(initialUrl, false);
-
-        } else {
-            FileInputStream fileIn = null;
-            try {
-                fileIn = new FileInputStream("queue.ser");
-                ObjectInputStream in = new ObjectInputStream(fileIn);
-                queue = (LinkedList<String>) in.readObject();
-                visited = (Set<String>) in.readObject();
-                in.close();
-                fileIn.close();
-            } catch (IOException | ClassNotFoundException i) {
-                i.printStackTrace();
-            }
-
-        }
+        initialUrl = "https://www.uc.pt/";
     }
 
     /**
      * Start the URL queue
      */
     public void start() {
-        SendQueueTask queueSend = new SendQueueTask(Configuration.PORT_A, this);
-        ReceiveQueueTask queueReceive = new ReceiveQueueTask(Configuration.PORT_B, this);
+        load();
         new Thread(queueSend).start();
         new Thread(queueReceive).start();
     }
@@ -58,9 +46,29 @@ public class UrlQueue {
         System.out.println("Added url: " + url);
         queue.add(url);
         visited.add(url);
-        //save the queue and visited urls to a object file
+        save();
+    }
+
+    public void load() {
         try {
-            FileOutputStream fileOut = new FileOutputStream("queue.ser");
+            FileInputStream fileIn = new FileInputStream("urlqueue.ser");
+            ObjectInputStream in = new ObjectInputStream(fileIn);
+            queue = (LinkedList<String>) in.readObject();
+            visited = (Set<String>) in.readObject();
+            in.close();
+            fileIn.close();
+        } catch (IOException | ClassNotFoundException i) {
+            queue = new LinkedList<>();
+            visited = new HashSet<>();
+            addUrl(initialUrl, false);
+
+        }
+    }
+
+
+    public void save() {
+        try {
+            FileOutputStream fileOut = new FileOutputStream("urlqueue.ser");
             ObjectOutputStream out = new ObjectOutputStream(fileOut);
             out.writeObject(queue);
             out.writeObject(visited);
@@ -71,9 +79,10 @@ public class UrlQueue {
         }
     }
 
-
     public synchronized String getUrl() {
-        return queue.poll();
+        String url = queue.poll();
+        save();
+        return url;
     }
 
 }

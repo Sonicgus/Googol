@@ -15,7 +15,6 @@ import java.util.HashSet;
 import static pt.uc.ga.FuncLib.getKeywordsSet;
 
 public class Downloader {
-    private final int id;
     private String url;
     private Document doc;
     private final HashSet<String> links;
@@ -23,17 +22,28 @@ public class Downloader {
     private String title;
     private String description;
 
-    public Downloader(int id) {
-        this.id = id;
+    private final int PORT_A;
+    private final int PORT_B;
+    private final String MULTICAST_ADDRESS;
+    private final int MULTICAST_PORT;
+    private final int MAXIMUM_REFERENCE_LINKS;
+
+    public Downloader(int PORT_A, int PORT_B, String MULTICAST_ADDRESS, int MULTICAST_PORT, int MAXIMUM_REFERENCE_LINKS) {
+
         this.links = new HashSet<>();
         this.wordsmap = new HashSet<>();
+        this.PORT_A = PORT_A;
+        this.PORT_B = PORT_B;
+        this.MULTICAST_ADDRESS = MULTICAST_ADDRESS;
+        this.MULTICAST_PORT = MULTICAST_PORT;
+        this.MAXIMUM_REFERENCE_LINKS = MAXIMUM_REFERENCE_LINKS;
     }
 
     /**
      *
      */
     public void start() {
-        System.out.println("Downloader " + this.id + " started");
+        System.out.println("Downloader started");
 
         while (true) {
             try {
@@ -75,15 +85,15 @@ public class Downloader {
 
     private void sendUrl() {
         try {
-            InetAddress group = InetAddress.getByName(Configuration.MULTICAST_ADDRESS);
-            MulticastSocket socket = new MulticastSocket(Configuration.MULTICAST_PORT);
+            InetAddress group = InetAddress.getByName(this.MULTICAST_ADDRESS);
+            MulticastSocket socket = new MulticastSocket(this.MULTICAST_PORT);
 
             String urlString = "type | url; item_count | 1; url | " + this.url + "; title | " + this.title
                     + "; description | " + this.description;
 
             byte[] buffer = urlString.getBytes();
 
-            DatagramPacket packet = new DatagramPacket(buffer, buffer.length, group, Configuration.MULTICAST_PORT);
+            DatagramPacket packet = new DatagramPacket(buffer, buffer.length, group, this.MULTICAST_PORT);
             socket.send(packet);
             socket.close();
         } catch (IOException e) {
@@ -92,7 +102,7 @@ public class Downloader {
     }
 
     private void handleSendUrlError() {
-        System.err.println("Failed to send URL to admin for Downloader[" + this.id + "]");
+        System.err.println("Failed to send URL to admin for Downloader");
     }
 
     private void handleDownloadFailure() {
@@ -117,17 +127,17 @@ public class Downloader {
 
 
         // Obtém o endereço IP do grupo multicast ao qual os dados serão enviados.
-        InetAddress group = InetAddress.getByName(Configuration.MULTICAST_ADDRESS);
+        InetAddress group = InetAddress.getByName(this.MULTICAST_ADDRESS);
 
         // Cria um socket de multicast que será usado para enviar os dados para o grupo
-        MulticastSocket socket = new MulticastSocket(Configuration.MULTICAST_PORT);
+        MulticastSocket socket = new MulticastSocket(this.MULTICAST_PORT);
 
         // Converte a string this.data em um array de bytes.
         byte[] buffer = info.getBytes();
 
         // Verifica o tamanho dos dados antes de enviar
         if (buffer.length > 65534) {
-            System.err.println("Downloader[" + this.id + "] [Page too long] " + "failed to send url to queue");
+            System.err.println("Downloader [Page too long] " + "failed to send url to queue");
             socket.close();
             return; // Retorna se a página for muito longa
         }
@@ -135,7 +145,7 @@ public class Downloader {
         // Envia os dados para o grupo multicast
         // DatagramPacket encapsula os dados a serem enviados, o endereço do grupo
         // multicast e a porta do multicast.
-        DatagramPacket packet = new DatagramPacket(buffer, buffer.length, group, Configuration.MULTICAST_PORT);
+        DatagramPacket packet = new DatagramPacket(buffer, buffer.length, group, this.MULTICAST_PORT);
         socket.send(packet); // Envie o DatagramPacket através do socket multicast.
         socket.close();// fecha o socket
     }
@@ -152,7 +162,7 @@ public class Downloader {
             info.append("; referenced_urls |");
 
         for (String link : this.links) {
-            if (linkCount++ == Configuration.MAXIMUM_REFERENCE_LINKS) {
+            if (linkCount++ == this.MAXIMUM_REFERENCE_LINKS) {
                 break;
             }
 
@@ -180,7 +190,7 @@ public class Downloader {
         int numberTries = 0;
         while (true) {
             try {
-                Socket socket = new Socket("localhost", Configuration.PORT_B);
+                Socket socket = new Socket("localhost", this.PORT_B);
                 PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 
                 for (String link : links) {
@@ -259,7 +269,7 @@ public class Downloader {
     private String getUrl() throws InterruptedException {
         while (true) {
             try {
-                Socket socket = new Socket("localhost", Configuration.PORT_A);
+                Socket socket = new Socket("localhost", this.PORT_A);
                 BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 String url = in.readLine();
                 socket.close();

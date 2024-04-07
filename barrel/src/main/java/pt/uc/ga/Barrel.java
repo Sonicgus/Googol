@@ -18,12 +18,21 @@ public class Barrel implements IBarrel {
     private HashMap<String, SiteInfo> urls;
     private final SiteInfoComparator comparator;
 
+    public static String MULTICAST_ADDRESS;
+    public static int MULTICAST_PORT;
+    public static String RMI_HOST;
+    public static int RMI_GATEWAY_PORT;
 
-    public Barrel(int id) {
+
+    public Barrel(int id, String MULTICAST_ADDRESS, int MULTICAST_PORT, String RMI_HOST, int RMI_GATEWAY_PORT) {
         this.id = id;
-        this.words = new HashMap<>();
-        this.urls = new HashMap<>();
+        Barrel.MULTICAST_ADDRESS = MULTICAST_ADDRESS;
+        Barrel.MULTICAST_PORT = MULTICAST_PORT;
+        Barrel.RMI_HOST = RMI_HOST;
+        Barrel.RMI_GATEWAY_PORT = RMI_GATEWAY_PORT;
         this.comparator = new SiteInfoComparator();
+
+        load();
     }
 
     /**
@@ -152,16 +161,39 @@ public class Barrel implements IBarrel {
                 urls.put(site.getUrl(), site);
             }
             //the following code saves the urlsmap and wordsmap to a object file
-            try {
-                FileOutputStream fileOut = new FileOutputStream("barrel" + id + ".ser");
-                ObjectOutputStream out = new ObjectOutputStream(fileOut);
-                out.writeObject(urls);
-                out.writeObject(words);
-                out.close();
-                fileOut.close();
-            } catch (IOException i) {
-                i.printStackTrace();
-            }
+            save();
+        }
+    }
+
+    //function to save the urlsmap and wordsmap to a object file
+    public void save() {
+        //if the file does not exist, create a new urlsmap and wordsmap
+        try {
+            FileOutputStream fileOut = new FileOutputStream("barrel" + id + ".ser");
+            ObjectOutputStream out = new ObjectOutputStream(fileOut);
+            out.writeObject(urls);
+            out.writeObject(words);
+            out.close();
+            fileOut.close();
+        } catch (IOException i) {
+            i.printStackTrace();
+        }
+    }
+
+    //function to load the urlsmap and wordsmap from a object file
+    public void load() {
+
+        //if the file does not exist, create a new urlsmap and wordsmap
+        try {
+            FileInputStream fileIn = new FileInputStream("barrel" + id + ".ser");
+            ObjectInputStream in = new ObjectInputStream(fileIn);
+            urls = (HashMap<String, SiteInfo>) in.readObject();
+            words = (HashMap<String, HashSet<String>>) in.readObject();
+            in.close();
+            fileIn.close();
+        } catch (IOException | ClassNotFoundException i) {
+            urls = new HashMap<>();
+            words = new HashMap<>();
         }
     }
 
@@ -169,44 +201,32 @@ public class Barrel implements IBarrel {
     public void start() {
         try {
             IBarrel stub = (IBarrel) UnicastRemoteObject.exportObject(this, 0);
-            Registry registry = LocateRegistry.getRegistry(Configuration.RMI_HOST, Configuration.RMI_GATEWAY_PORT);
-
+            Registry registry;
+            while (true) {
+                try {
+                    registry = LocateRegistry.getRegistry(RMI_HOST, RMI_GATEWAY_PORT);
+                    registry.list();
+                    break;
+                } catch (RemoteException e) {
+                    System.out.println("Waiting for RMI Gateway to start, retrying in 5 seconds...");
+                    Thread.sleep(5000);
+                }
+            }
             registry.rebind("barrel" + id, stub);
-        } catch (RemoteException e) {
+        } catch (RemoteException | InterruptedException e) {
             throw new RuntimeException(e);
         }
 
-        File file = new File("barrel" + id + ".ser");
-        if (!file.exists()) {
-            try {
-                file.createNewFile(); // This line will create a new file if it does not exist
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        } else {
-
-            //read the object file to get the urlsmap and wordsmap
-            try {
-                FileInputStream fileIn = new FileInputStream("barrel" + id + ".ser");
-                ObjectInputStream in = new ObjectInputStream(fileIn);
-                urls = (HashMap<String, SiteInfo>) in.readObject();
-                words = (HashMap<String, HashSet<String>>) in.readObject();
-                in.close();
-                fileIn.close();
-            } catch (IOException | ClassNotFoundException i) {
-                i.printStackTrace();
-            }
-        }
 
         byte[] buf = new byte[1024];
         try {
             // Criação do socket de multicast
-            MulticastSocket socket = new MulticastSocket(Configuration.MULTICAST_PORT);
+            MulticastSocket socket = new MulticastSocket(MULTICAST_PORT);
 
             // Junta-se ao grupo de multicast
-            InetAddress group = InetAddress.getByName(Configuration.MULTICAST_ADDRESS);
+            InetAddress group = InetAddress.getByName(MULTICAST_ADDRESS);
             NetworkInterface networkInterface = NetworkInterface.getByInetAddress(group);
-            InetSocketAddress groupAddress = new InetSocketAddress(group, Configuration.MULTICAST_PORT);
+            InetSocketAddress groupAddress = new InetSocketAddress(group, MULTICAST_PORT);
             socket.joinGroup(groupAddress, networkInterface);
             System.out.println("Barrel " + id + " started");
             while (true) {

@@ -2,7 +2,15 @@ package pt.uc.ga;
 
 public class Main {
     public static void main(String[] args) {
-        Client client = new Client();
+        if (args.length != 2) {
+            System.out.println("Usage: java -jar rmi-client.jar <RMI_HOST> <RMI_GATEWAY_PORT>");
+            System.exit(1);
+        }
+
+        String RMI_HOST = args[0];
+        int RMI_GATEWAY_PORT = Integer.parseInt(args[1]);
+
+        Client client = new Client(RMI_HOST, RMI_GATEWAY_PORT);
         client.start();
     }
 }
