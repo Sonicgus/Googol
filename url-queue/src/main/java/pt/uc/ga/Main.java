@@ -11,15 +11,15 @@ public class Main {
         int PORT_A = Integer.parseInt(args[0]);
         int PORT_B = Integer.parseInt(args[1]);
 
-        UrlQueue urlQueue;
-
         if (args.length == 3) {
             String initialUrl = args[2];
-            urlQueue = new UrlQueue(PORT_A, PORT_B, initialUrl);
+            UrlQueue urlQueue = new UrlQueue(PORT_A, PORT_B, initialUrl);
+            urlQueue.start();
         } else {
-            urlQueue = new UrlQueue(PORT_A, PORT_B);
+            UrlQueue urlQueue = new UrlQueue(PORT_A, PORT_B);
+            urlQueue.start();
         }
 
-        urlQueue.start();
+
     }
 }

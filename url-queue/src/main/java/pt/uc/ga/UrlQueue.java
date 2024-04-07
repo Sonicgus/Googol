@@ -9,9 +9,6 @@ public class UrlQueue {
     private LinkedList<String> queue;
     private Set<String> visited;
 
-    private int PORT_A;
-    private int PORT_B;
-
     SendQueueTask queueSend;
     ReceiveQueueTask queueReceive;
 
@@ -29,7 +26,7 @@ public class UrlQueue {
         queueSend = new SendQueueTask(PORT_A, this);
         queueReceive = new ReceiveQueueTask(PORT_B, this);
 
-        initialUrl = "https://www.uc.pt/";
+        this.initialUrl = initialUrl;
     }
 
     /**

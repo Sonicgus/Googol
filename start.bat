@@ -5,7 +5,7 @@ start cmd /k "java -jar downloader-1.0.0-SNAPSHOT.jar 9080 9081 224.3.2.1 4321 1
 start cmd /k "java -jar downloader-1.0.0-SNAPSHOT.jar 9080 9081 224.3.2.1 4321 10"
 start cmd /k "java -jar downloader-1.0.0-SNAPSHOT.jar 9080 9081 224.3.2.1 4321 10"
 cd ..\..\url-queue\target
-start cmd /k "java -jar url-queue-1.0.0-SNAPSHOT.jar 9080 9081"
+start cmd /k "java -jar url-queue-1.0.0-SNAPSHOT.jar 9080 9081 https://www.uc.pt/"
 cd ..\..\rmi-gateway\target
 start cmd /k "java -jar rmi-gateway-1.0.0-SNAPSHOT.jar 224.3.2.1 4321 9081 localhost 1099"
 cd ..\..\barrel\target
