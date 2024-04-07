@@ -1,6 +1,6 @@
 package pt.uc.ga;
 
-import java.io.IOException;
+import java.io.*;
 import java.net.*;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -14,8 +14,8 @@ import static pt.uc.ga.FuncLib.getDici;
 
 public class Barrel implements IBarrel {
     private final int id;
-    private final HashMap<String, HashSet<String>> words;
-    private final HashMap<String, SiteInfo> urls;
+    private HashMap<String, HashSet<String>> words;
+    private HashMap<String, SiteInfo> urls;
     private final SiteInfoComparator comparator;
 
 
@@ -91,7 +91,6 @@ public class Barrel implements IBarrel {
 
     @Override
     public void ping() {
-        System.out.println("Ping barrel");
     }
 
 
@@ -104,56 +103,64 @@ public class Barrel implements IBarrel {
         // type | url; url | www.uc.pt; title | DEI; description | DEI é fixe; referenced_urls | www.google.com www.facebook.com; words | DEI UC;
         HashMap<String, String> dici = getDici(info);
 
-        if (dici.containsKey("type")) {
-            if (dici.get("type").equals("url") && dici.containsKey("url")) {
-                SiteInfo site = new SiteInfo();
+        if (dici.containsKey("type") && dici.get("type").equals("url") && dici.containsKey("url")) {
+            SiteInfo site = new SiteInfo();
 
-                site.setUrl(dici.get("url"));
+            site.setUrl(dici.get("url"));
 
+            if (dici.containsKey("title"))
+                site.setTitle(dici.get("title"));
+
+            if (dici.containsKey("description"))
+                site.setDescription(dici.get("description"));
+
+            if (dici.containsKey("referenced_urls")) {
+                String[] urlss = dici.get("referenced_urls").split(" ");
+                for (String url : urlss) {
+                    if (urls.containsKey(url)) {
+                        urls.get(url).getUrls().add(site.getUrl());
+                    } else {
+                        SiteInfo siteaux = new SiteInfo();
+                        siteaux.setUrl(url);
+                        siteaux.getUrls().add(site.getUrl());
+                        urls.put(url, siteaux);
+                    }
+                }
+            }
+
+            if (dici.containsKey("words")) {
+                String[] wordss = dici.get("words").split(" ");
+
+                for (String word : wordss) {
+                    if (words.containsKey(word)) {
+                        words.get(word).add(site.getUrl());
+                    } else {
+                        HashSet<String> urlsaux = new HashSet<>();
+                        urlsaux.add(site.getUrl());
+                        words.put(word, urlsaux);
+                    }
+                }
+            }
+
+            if (urls.containsKey(dici.get("url"))) {
+                //if already exists update with title, description
                 if (dici.containsKey("title"))
-                    site.setTitle(dici.get("title"));
-
+                    urls.get(dici.get("url")).setTitle(site.getTitle());
                 if (dici.containsKey("description"))
-                    site.setDescription(dici.get("description"));
-
-                if (dici.containsKey("referenced_urls")) {
-                    String[] urlss = dici.get("referenced_urls").split(" ");
-                    for (String url : urlss) {
-                        if (urls.containsKey(url)) {
-                            urls.get(url).getUrls().add(site.getUrl());
-                        } else {
-                            SiteInfo siteaux = new SiteInfo();
-                            siteaux.setUrl(url);
-                            siteaux.getUrls().add(site.getUrl());
-                            urls.put(url, siteaux);
-                        }
-                    }
-                }
-
-                if (dici.containsKey("words")) {
-                    String[] wordss = dici.get("words").split(" ");
-
-                    for (String word : wordss) {
-                        if (words.containsKey(word)) {
-                            words.get(word).add(site.getUrl());
-                        } else {
-                            HashSet<String> urlsaux = new HashSet<>();
-                            urlsaux.add(site.getUrl());
-                            words.put(word, urlsaux);
-                        }
-                    }
-                }
-
-                if (urls.containsKey(dici.get("url"))) {
-                    //if already exists update with title, description
-                    if (dici.containsKey("title"))
-                        urls.get(dici.get("url")).setTitle(site.getTitle());
-                    if (dici.containsKey("description"))
-                        urls.get(dici.get("url")).setDescription(site.getDescription());
-                } else {
-                    urls.put(site.getUrl(), site);
-                }
-
+                    urls.get(dici.get("url")).setDescription(site.getDescription());
+            } else {
+                urls.put(site.getUrl(), site);
+            }
+            //the following code saves the urlsmap and wordsmap to a object file
+            try {
+                FileOutputStream fileOut = new FileOutputStream("barrel" + id + ".ser");
+                ObjectOutputStream out = new ObjectOutputStream(fileOut);
+                out.writeObject(urls);
+                out.writeObject(words);
+                out.close();
+                fileOut.close();
+            } catch (IOException i) {
+                i.printStackTrace();
             }
         }
     }
@@ -167,6 +174,28 @@ public class Barrel implements IBarrel {
             registry.rebind("barrel" + id, stub);
         } catch (RemoteException e) {
             throw new RuntimeException(e);
+        }
+
+        File file = new File("barrel" + id + ".ser");
+        if (!file.exists()) {
+            try {
+                file.createNewFile(); // This line will create a new file if it does not exist
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+
+            //read the object file to get the urlsmap and wordsmap
+            try {
+                FileInputStream fileIn = new FileInputStream("barrel" + id + ".ser");
+                ObjectInputStream in = new ObjectInputStream(fileIn);
+                urls = (HashMap<String, SiteInfo>) in.readObject();
+                words = (HashMap<String, HashSet<String>>) in.readObject();
+                in.close();
+                fileIn.close();
+            } catch (IOException | ClassNotFoundException i) {
+                i.printStackTrace();
+            }
         }
 
         byte[] buf = new byte[1024];

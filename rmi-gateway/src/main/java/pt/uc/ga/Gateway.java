@@ -1,7 +1,6 @@
 package pt.uc.ga;
 
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.*;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -14,14 +13,34 @@ import static pt.uc.ga.FuncLib.getDici;
 import static pt.uc.ga.FuncLib.getKeywordsSet;
 
 public class Gateway implements IGateway {
-    private final HashMap<String, Long> searches;
+    private HashMap<String, Long> searches;
     private long avgtime;
     private long num_searches;
 
     public Gateway() {
-        this.searches = new HashMap<>();
-        this.avgtime = 0;
-        this.num_searches = 0;
+        // read object file with searches, avgtime and num_searches
+        //verify if file exists
+        File file = new File("gateway.ser");
+        if (!file.exists()) {
+            this.searches = new HashMap<>();
+            this.avgtime = 0;
+            this.num_searches = 0;
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            try {
+                ObjectInputStream ois = new ObjectInputStream(new FileInputStream("gateway.ser"));
+                searches = (HashMap<String, Long>) ois.readObject();
+                avgtime = (long) ois.readObject();
+                num_searches = (long) ois.readObject();
+                ois.close();
+            } catch (IOException | ClassNotFoundException e) {
+                System.out.println("Error reading object file: " + e.getMessage());
+            }
+        }
     }
 
 
@@ -86,6 +105,16 @@ public class Gateway implements IGateway {
     private synchronized void calculateAvg(long time) {
         avgtime = (avgtime * num_searches + time) / (num_searches + 1);
         num_searches++;
+        //save object file with searches, avgtime and num_searches
+        try {
+            ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("gateway.ser"));
+            oos.writeObject(searches);
+            oos.writeObject(avgtime);
+            oos.writeObject(num_searches);
+            oos.close();
+        } catch (IOException e) {
+            System.out.println("Error writing object file: " + e.getMessage());
+        }
         //send avg to multicast
         try {
             // Criação do socket de multicast
