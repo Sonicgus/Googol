@@ -23,31 +23,41 @@ public class Gateway implements GatewayInterface {
 
 
     /**
-     * @param url
-     * @return
-     * @throws UnknownHostException
-     * @throws IOException
+     *
      */
     @Override
-    public String addLink(String url) throws UnknownHostException, IOException {
+    public String addLink(String url) throws RemoteException {
         System.out.println("Received URL from client: " + url);
 
         // Adiciona o URL à fila
-        Socket socket = new Socket("localhost", Configuration.PORT_B);
-        PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+        Socket socket = null;
+        PrintWriter out = null;
+        try {
+            socket = new Socket("localhost", Configuration.PORT_B);
+            out = new PrintWriter(socket.getOutputStream(), true);
 
-        out.println(url);
-
-        out.close();
-        socket.close();
+            out.println(url);
+        } catch (IOException e) {
+            System.out.println("Erro ao enviar URL: " + e.getMessage());
+            return "Erro ao enviar URL: " + e.getMessage();
+        } finally {
+            if (out != null) {
+                out.close();
+            }
+            if (socket != null) {
+                try {
+                    socket.close();
+                } catch (IOException e) {
+                    System.out.println("Erro ao fechar o socket: " + e.getMessage());
+                }
+            }
+        }
 
         return "Received URL: " + url;
     }
 
     /**
-     * @param url
-     * @return
-     * @throws RemoteException
+     *
      */
     @Override
     public String linkInfo(String url) throws RemoteException {
@@ -96,10 +106,7 @@ public class Gateway implements GatewayInterface {
     }
 
     /**
-     * @param keywords
-     * @param page_number
-     * @return
-     * @throws RemoteException
+     *
      */
     @Override
     public String search(HashSet<String> keywords, int page_number) throws RemoteException {
@@ -115,14 +122,14 @@ public class Gateway implements GatewayInterface {
         }
 
         try {
-            String search = "";
+            StringBuilder search = new StringBuilder();
             for (String keyword : keywords) {
-                search += keyword + " ";
+                search.append(keyword).append(" ");
             }
-            if (searches.containsKey(search)) {
-                searches.put(search, searches.get(search) + 1);
+            if (searches.containsKey(search.toString())) {
+                searches.put(search.toString(), searches.get(search.toString()) + 1);
             } else {
-                searches.put(search, 1L);
+                searches.put(search.toString(), 1L);
             }
 
             //start time
@@ -141,7 +148,7 @@ public class Gateway implements GatewayInterface {
     }
 
     /**
-     * @return
+     *
      */
     public BarrelInterface getRandomBarrel() {
         while (true) {
@@ -166,8 +173,7 @@ public class Gateway implements GatewayInterface {
     }
 
     /**
-     * @return
-     * @throws RemoteException
+     *
      */
     @Override
     public String admin(boolean wait) throws RemoteException {
@@ -218,7 +224,7 @@ public class Gateway implements GatewayInterface {
         HashMap<String, Long> copysearches = new HashMap<>(searches);
         //add all searches to searchss
         //and than add to response the top 10
-        String response = "\n\nActive Barrels:\n";
+        StringBuilder response = new StringBuilder("\n\nActive Barrels:\n");
         try {
             Registry registry = LocateRegistry.getRegistry(Configuration.RMI_HOST, Configuration.RMI_GATEWAY_PORT);
             //get barrels list. all start with "barrel"
@@ -231,7 +237,7 @@ public class Gateway implements GatewayInterface {
                 }
             }
             for (String barrel : barrelsList) {
-                response += barrel + "\n";
+                response.append(barrel).append("\n");
             }
         } catch (RemoteException e) {
             e.printStackTrace();
@@ -239,7 +245,7 @@ public class Gateway implements GatewayInterface {
         if (searches.isEmpty()) {
             return response + "No searches yet";
         }
-        response += "Top 10 Searches: \n";
+        response.append("Top 10 Searches: \n");
         for (int i = 0; i < 10 && i < searches.size(); i++) {
             String max = "";
             long maxvalue = 0;
@@ -249,7 +255,7 @@ public class Gateway implements GatewayInterface {
                     maxvalue = copysearches.get(search);
                 }
             }
-            response += i + 1 + " - " + max + " Number of searches: " + maxvalue + "\n";
+            response.append(i + 1).append(" - ").append(max).append(" Number of searches: ").append(maxvalue).append("\n");
             copysearches.remove(max);
         }
 

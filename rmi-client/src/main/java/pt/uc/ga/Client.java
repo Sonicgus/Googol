@@ -9,19 +9,25 @@ import java.util.Scanner;
 public class Client {
     private GatewayInterface g;
     private final Scanner scanner;
+    private boolean admin;
+    private final Object lock;
 
     class AdminThread extends Thread {
         public void run() {
-            try {
-                System.out.println(g.admin(false));
-            } catch (Exception e) {
-                System.out.println("Exception in admin: " + e);
-                e.printStackTrace();
-            }
-            while (!isInterrupted()) {
+            while (true) {
+                synchronized (lock) {
+
+                    while (!admin) {
+                        try {
+                            lock.wait();
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                }
                 try {
                     String response = g.admin(true);
-                    if (!isInterrupted())
+                    if (admin)
                         System.out.println(response);
                 } catch (Exception e) {
                     System.out.println("Exception in admin: " + e);
@@ -34,6 +40,11 @@ public class Client {
     public Client() {
         g = getGateway();
         scanner = new Scanner(System.in);
+        admin = false;
+        lock = new Object();
+
+        Thread t = new AdminThread();
+        t.start();
     }
 
     private GatewayInterface getGateway() {
@@ -150,12 +161,20 @@ public class Client {
                         getLinkInfo();
                         break;
                     case "4":
+                        try {
+                            System.out.println(g.admin(false));
+                        } catch (Exception e) {
+                            System.out.println("Exception in admin: " + e);
+                            e.printStackTrace();
+                        }
 
-                        Thread t = new AdminThread();
+                        admin = true;
+                        synchronized (lock) {
+                            lock.notify();
+                        }
                         System.out.println("Press Enter to exit admin page");
-                        t.start();
                         scanner.nextLine();
-                        t.interrupt();
+                        admin = false;
 
                         break;
                     case "0":
