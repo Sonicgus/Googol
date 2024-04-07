@@ -77,15 +77,18 @@ public class Client {
 
 
     private void indexUrl() {
-        System.out.println("Enter the URL to index: ");
-        String url = scanner.nextLine();
+        String url;
+        do {
+            System.out.println("Enter the URL to index: ");
+            url = scanner.nextLine();
+        } while (!isUrl(url));
+
         try {
             System.out.println(g.addLink(url));
         } catch (Exception e) {
             System.out.println("Exception in indexUrl: " + e);
             e.printStackTrace();
         }
-
     }
 
     private void search() {
@@ -129,6 +132,13 @@ public class Client {
         }
 
 
+    }
+
+    private boolean isUrl(String url) {
+        if (url == null) {
+            return false;
+        } else
+            return url.matches("^(http|https)://.*$");
     }
 
     private void getLinkInfo() {
