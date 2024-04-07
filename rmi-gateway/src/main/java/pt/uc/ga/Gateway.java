@@ -136,9 +136,6 @@ public class Gateway implements GatewayInterface {
 
                 calculateAvg(end - start);
                 return res;
-            } catch (ConnectException e) {
-                System.out.println("Barrel is down: " + e.getMessage());
-
             } catch (Exception e) {
                 System.out.println("Exception in search: " + e);
             }
