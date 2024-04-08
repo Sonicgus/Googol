@@ -43,14 +43,14 @@ public class ReceiveQueueTask implements Runnable {
                 socket = serverSocket.accept();
                 BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 String url;
-                while (true) {
-                    if ((url = in.readLine()) != null) {
-                        if (url.startsWith("resend")) {
-                            urlQueue.addUrl(url.substring(6), true);
-                        } else {
-                            urlQueue.addUrl(url, false);
-                        }
+                while ((url = in.readLine()) != null) {
+
+                    if (url.startsWith("resend")) {
+                        urlQueue.addUrl(url.substring(6), true);
+                    } else {
+                        urlQueue.addUrl(url, false);
                     }
+
                 }
             } catch (IOException e) {
                 e.printStackTrace();
