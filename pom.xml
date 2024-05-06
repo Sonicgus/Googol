@@ -15,6 +15,7 @@
         <module>barrel</module>
         <module>rmi-gateway</module>
         <module>rmi-client</module>
+        <module>web-server</module>
     </modules>
 
     <properties>
