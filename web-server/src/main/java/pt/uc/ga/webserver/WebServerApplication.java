@@ -10,8 +10,8 @@ public class WebServerApplication {
 
 
     @Bean
-    public ServletRegistrationBean<teste> testeBean() {
-        ServletRegistrationBean<teste> bean = new ServletRegistrationBean<>(new teste(), "/thymeleafServlet/*");
+    public ServletRegistrationBean<ThymeleafServlet> thymeleafServletBean() {
+        ServletRegistrationBean<ThymeleafServlet> bean = new ServletRegistrationBean<>(new ThymeleafServlet(), "/thymeleafServlet/*");
         bean.setLoadOnStartup(1);
         return bean;
     }
