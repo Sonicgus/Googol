@@ -12,8 +12,6 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.util.ArrayList;
-import java.util.List;
 
 @Controller
 public class HomeController {
@@ -24,36 +22,6 @@ public class HomeController {
     @GetMapping("/")
     public String index() {
         return "index";
-    }
-
-    @GetMapping("/searchteste")
-    public String searchteste() {
-        return "search";
-    }
-
-    public List<SearchResult> parseSearchResults(String input) {
-        String[] blocks = input.split("URL:");
-        List<SearchResult> searchResults = new ArrayList<>();
-
-        for (int i = 1; i < blocks.length; i++) {
-            String[] parts = blocks[i].split("Title:");
-            if (parts.length < 2) continue;
-            String url = parts[0].trim();
-
-            parts = parts[1].split("Description:");
-            if (parts.length < 2) continue;
-            String title = parts[0].trim();
-
-            parts = parts[1].split("Number of URLs pointing to this URL:");
-            if (parts.length < 2) continue;
-            String description = parts[0].trim();
-
-            String number = parts[1].trim();
-
-            searchResults.add(new SearchResult(url, title, description, number));
-        }
-
-        return searchResults;
     }
 
     // List<SearchResult> or PaginatedSearchResult
@@ -77,20 +45,4 @@ public class HomeController {
 
         return "search";
     }
-
-    public class SearchResult {
-        private String url;
-        private String title;
-        private String description;
-        private String number;
-
-        public SearchResult(String url, String title, String description, String number) {
-            this.url = url;
-            this.title = title;
-            this.description = description;
-            this.number = number;
-        }
-    }
-
-
 }

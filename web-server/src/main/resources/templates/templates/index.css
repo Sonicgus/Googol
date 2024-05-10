@@ -9,7 +9,7 @@
 
 text {
     font-family: arial,
-        sans-serif;
+    sans-serif;
 }
 
 #logo {
@@ -33,7 +33,7 @@ text {
     min-width: 400px;
 }
 
-button {
+button, #search_button, #lucky_button {
     background-color: rgb(233, 233, 233);
     color: black;
     padding: 14px 20px;
@@ -41,7 +41,7 @@ button {
     margin: 8px 8px;
     cursor: pointer;
     width: 300px;
-    display: flexbox;
+    display: flex;
 }
 
 

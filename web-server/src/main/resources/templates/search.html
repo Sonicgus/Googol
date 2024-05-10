@@ -23,18 +23,28 @@
     </form>
 
 
-    <a th:if="${page > 1}" th:href="@{/search(q=${q}, page=${page - 1})}">
-        <button id="prev_button">Anterior</button>
-    </a>
-    <a th:if="${page >= totalPages}" th:href="@{/search(q=${q}, page=${page + 1})}">
-        <button id="next_button">Próximo</button>
-    </a>
 </div>
 <div>
     <h1>Resultados da pesquisa</h1>
-    <p th:text="${results}"></p>
+    <pre id="results" th:text="${results}"></pre>
 </div>
 
-</body>
+<a th:if="${page > 1}" th:href="@{/search(q=${q}, page=${page - 1})}">
+    <button id="prev_button">Anterior</button>
+</a>
+<a th:if="${page >= totalPages}" th:href="@{/search(q=${q}, page=${page + 1})}">
+    <button id="next_button">Próximo</button>
+</a>
 
+</body>
+<script>
+    window.onload = function () {
+        var pre = document.getElementById('results');
+        var text = pre.textContent;
+        var urlRegex = /(https?:\/\/[^\s]+)/g;
+        pre.innerHTML = text.replace(urlRegex, function (url) {
+            return '<a href="' + url + '">' + url + '</a>';
+        });
+    };
+</script>
 </html>
