@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" th:href="@{/templates/index.css}">
+    <link rel="stylesheet" th:href="@{/templates/global.css}">
+    <title>Googol</title>
+</head>
+
+<body>
+<a href="login">
+    <button id="login_button"> Login</button>
+</a>
+
+<div id="cenas">
+    <img src="img/logo.png" id="logo" alt="Googol logo">
+
+    <form action="#" th:action="@{/search}" method="get">
+        <input class="search_box" type="text" id="searchInput" name="q" th:value="${q}">
+        <input id="search_button" type="submit" value="Pesquisar">
+        <input id="lucky_button" type="submit" value="Sinto-me com azar">
+    </form>
+</div>
+
+</body>
+
+</html>

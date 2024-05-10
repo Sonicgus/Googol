@@ -45,7 +45,7 @@ button {
 }
 
 
-#botoes {
+#buttons {
     display: flex;
     margin-left: auto;
     margin-right: auto;
@@ -56,7 +56,7 @@ button {
     justify-content: center;
 }
 
-#hehebutton {
+#login_button {
     right: 0px;
     position: absolute;
 }

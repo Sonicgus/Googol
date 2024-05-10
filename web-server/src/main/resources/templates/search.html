@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" th:href="@{/templates/search.css}">
+    <link rel="stylesheet" th:href="@{/templates/global.css}">
+    <title>Googol</title>
+</head>
+
+<body>
+
+<div id="cenas">
+    <a href="login">
+        <button id="login_button"> Login</button>
+    </a>
+    <img src="img/logo.png" id="logo" alt="Googol logo">
+
+    <form action="#" th:action="@{/search}" method="get">
+        <input class="search_box" type="text" id="searchInput" name="q" th:value="${q}">
+        <input type="submit" value="Pesquisar">
+    </form>
+
+
+    <a th:if="${page > 1}" th:href="@{/search(q=${q}, page=${page - 1})}">
+        <button id="prev_button">Anterior</button>
+    </a>
+    <a th:if="${page >= totalPages}" th:href="@{/search(q=${q}, page=${page + 1})}">
+        <button id="next_button">Próximo</button>
+    </a>
+</div>
+<div>
+    <h1>Resultados da pesquisa</h1>
+    <p th:text="${results}"></p>
+</div>
+
+</body>
+
+</html>

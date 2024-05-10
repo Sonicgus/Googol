@@ -1,0 +1,62 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+#cenas {
+    margin-top: 300px;
+}
+
+text {
+    font-family: arial,
+    sans-serif;
+}
+
+#logo {
+    height: 30px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+
+}
+
+.search_box {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 20px;
+    width: 100%;
+    border-radius: 40px;
+    height: 40px;
+    border-inline-width: 1px;
+    border-inline-color: lightgray;
+    min-width: 400px;
+}
+
+button {
+    background-color: rgb(233, 233, 233);
+    color: black;
+    padding: 14px 20px;
+    border: none;
+    margin: 8px 8px;
+    cursor: pointer;
+    width: 300px;
+    display: flexbox;
+}
+
+
+#buttons {
+    display: flex;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 20px;
+    width: 50%;
+    max-width: 400px;
+    align-items: center;
+    justify-content: center;
+}
+
+#login_button {
+    right: 0px;
+    position: absolute;
+}
