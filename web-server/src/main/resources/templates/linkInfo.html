@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<a href="/" th:href="@{/}">
+    <img src="img/logo.png" id="logo" alt="Googol logo">
+</a>
+
+<form action="#" th:action="@{/linkinfo}" method="get">
+    <input class="search_box" type="text" id="searchInput" name="q" th:value="${q}">
+    <input type="submit" value="Obter Informações">
+</form>
+
+<div th:if="${not #strings.isEmpty(results)}">
+    <h1>Informações sobre o site:</h1>
+    <pre id="results" th:text="${results}"></pre>
+</div>
+
+</body>
+</html>

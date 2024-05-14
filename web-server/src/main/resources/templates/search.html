@@ -12,10 +12,9 @@
 <body>
 
 <div id="cenas">
-    <a href="login">
-        <button id="login_button"> Login</button>
+    <a href="/" th:href="@{/}">
+        <img src="img/logo.png" id="logo" alt="Googol logo">
     </a>
-    <img src="img/logo.png" id="logo" alt="Googol logo">
 
     <form action="#" th:action="@{/search}" method="get">
         <input class="search_box" type="text" id="searchInput" name="q" th:value="${q}">

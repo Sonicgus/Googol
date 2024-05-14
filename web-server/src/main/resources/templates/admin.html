@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<a href="/" th:href="@{/}">
+    <img src="img/logo.png" id="logo" alt="Googol logo">
+</a>
+<pre id="results" th:text="${results}"></pre>
+</body>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    var contextPath = /*[[@{ / }]]*/ 'default';
+    var socket;
+
+    function connect() {
+        socket = new WebSocket(((window.location.protocol === "https:") ? "wss://" : "ws://") + window.location.host + contextPath + "websocket-endpoint");
+
+        socket.onopen = function (event) {
+            console.log("Conexão aberta");
+            console.log("Endpoint: " + socket.url);
+        };
+        socket.onmessage = function (event) {
+            console.log("Mensagem recebida: " + event.data);
+            document.getElementById('results').textContent = event.data;
+        };
+
+        socket.onclose = function (event) {
+            console.log("Conexão fechada");
+            console.log("Tentando reconectar em 10 segundos...");
+            // Tenta reconectar após 10 segundos
+            setTimeout(connect, 10000);
+        };
+    }
+
+    // Inicia a conexão
+    connect();
+    /*]]>*/
+</script>
+
+
+</html>

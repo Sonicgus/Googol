@@ -10,18 +10,27 @@
 </head>
 
 <body>
-<a href="login">
-    <button id="login_button"> Login</button>
-</a>
 
 <div id="cenas">
-    <img src="img/logo.png" id="logo" alt="Googol logo">
+    <img th:src="@{/img/logo.png}" id="logo" alt="Googol logo">
 
     <form action="#" th:action="@{/search}" method="get">
         <input class="search_box" type="text" id="searchInput" name="q" th:value="${q}">
         <input id="search_button" type="submit" value="Pesquisar">
-        <input id="lucky_button" type="submit" value="Sinto-me com azar">
     </form>
+
+    <form action="#" th:action="@{/linkinfo}" method="get">
+        <input id="linkinfo" type="submit" value="Obter Informações de um site">
+    </form>
+
+    <form action="#" th:action="@{/addlink}" method="get">
+        <input id="addlink" type="submit" value="Adicionar site para indexar">
+    </form>
+
+    <form action="#" th:action="@{/admin}" method="get">
+        <input id="admin" type="submit" value="Admin">
+    </form>
+
 </div>
 
 </body>

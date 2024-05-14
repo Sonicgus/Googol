@@ -55,8 +55,3 @@ button, #search_button, #lucky_button {
     align-items: center;
     justify-content: center;
 }
-
-#login_button {
-    right: 0px;
-    position: absolute;
-}

@@ -45,4 +45,54 @@ public class HomeController {
 
         return "search";
     }
+
+    @GetMapping("/linkinfo")
+    public String linkInfo(@RequestParam(required = false) String q, Model model) throws RemoteException, NotBoundException, MalformedURLException {
+
+        if (q == null) {
+            model.addAttribute("results", "");
+            return "linkInfo";
+        }
+
+        Registry registry = LocateRegistry.getRegistry(RMI_HOST, RMI_GATEWAY_PORT);
+        IGateway gateway = (IGateway) registry.lookup("googol");
+
+        String results = gateway.linkInfo(q);
+
+        model.addAttribute("results", results);
+
+        return "linkInfo";
+    }
+
+    @GetMapping("/addlink")
+    public String addLink(@RequestParam(required = false) String q, Model model) throws RemoteException, NotBoundException, MalformedURLException {
+
+        if (q == null) {
+            model.addAttribute("results", "");
+            return "addLink";
+        }
+
+        Registry registry = LocateRegistry.getRegistry(RMI_HOST, RMI_GATEWAY_PORT);
+        IGateway gateway = (IGateway) registry.lookup("googol");
+
+        String results = gateway.addLink(q);
+
+        model.addAttribute("results", results);
+
+        return "addLink";
+    }
+
+    @GetMapping("/admin")
+    public String admin(Model model) throws RemoteException, NotBoundException, MalformedURLException {
+
+        Registry registry = LocateRegistry.getRegistry(RMI_HOST, RMI_GATEWAY_PORT);
+        IGateway gateway = (IGateway) registry.lookup("googol");
+
+        String results = gateway.getAdminPage(false);
+
+        model.addAttribute("results", results);
+
+        return "admin";
+
+    }
 }

@@ -13,6 +13,5 @@ start cmd /k "java -jar barrel-1.0.0-SNAPSHOT.jar 0 224.3.2.1 4321 localhost 109
 start cmd /k "java -jar barrel-1.0.0-SNAPSHOT.jar 1 224.3.2.1 4321 localhost 1099"
 cd ..\..\rmi-client\target
 start cmd /k "java -jar rmi-client-1.0.0-SNAPSHOT.jar localhost 1099"
-start cmd /k "java -jar rmi-client-1.0.0-SNAPSHOT.jar localhost 1099"
 cd "..\..\web-server"
 start cmd /k "mvnw spring-boot:run"
