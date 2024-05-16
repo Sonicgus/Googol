@@ -3,25 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Link Info</title>
+    <title>Index Hacker News</title>
     <link rel="stylesheet" th:href="@{/templates/global.css}">
 </head>
 <body>
 <nav th:insert="~{navbar :: navbar}"></nav>
-
 <a href="/" th:href="@{/}">
     <img th:src="@{/img/logo.png}" id="logo" alt="Googol logo">
 </a>
 
-<form action="#" th:action="@{/linkinfo}" method="get">
+<form action="#" th:action="@{/indexhacker}" method="get">
     <input class="search_box" type="text" id="searchInput" name="q" th:value="${q}">
-    <input type="submit" value="Obter Informações">
+    <input type="submit" value="indexar os que houver">
 </form>
 
-<div th:if="${not #strings.isEmpty(results)}">
-    <h1>Informações sobre o site:</h1>
-    <pre id="results" th:text="${results}"></pre>
+<div th:if="${response != null}">
+    <h1>Os seguintes urls irão ser indexados:</h1>
+    <ul>
+        <li th:each="item : ${response}" th:text="${item}"></li>
+    </ul>
 </div>
+
 
 </body>
 </html>

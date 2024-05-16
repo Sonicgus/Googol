@@ -1,29 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+    <title>Weather Information</title>
     <link rel="stylesheet" th:href="@{/templates/global.css}">
-    <link rel="stylesheet" th:href="@{/templates/index.css}">
-
-    <title>Googol</title>
 </head>
-
 <body>
-
 <nav th:insert="~{navbar :: navbar}"></nav>
-
-<div id="cenas">
+<a href="/" th:href="@{/}">
     <img th:src="@{/img/logo.png}" id="logo" alt="Googol logo">
+</a>
 
-    <form action="#" th:action="@{/search}" method="get">
-        <input class="search_box" type="text" id="searchInput" name="q" th:value="${q}">
-        <input id="search_button" type="submit" value="Pesquisar">
-    </form>
-</div>
+<form action="/weather" method="get">
+    <input type="text" name="city" placeholder="Enter city name">
+    <input type="submit" value="Search">
+</form>
 
+<button onclick="useClientCoordinates()">Use my coordinates</button>
 
 <div th:if="${weather != null}">
     <h2>Weather Information</h2>
@@ -36,7 +29,17 @@
     <p th:text="'Wind Speed: ' + ${windSpeed} + ' km/h'"></p>
 </div>
 
+<script>
+function useClientCoordinates() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+            window.location.href = '/weather?lat=' + position.coords.latitude + '&lon=' + position.coords.longitude;
+        });
+    } else {
+        alert("Geolocation is not supported by this browser.");
+    }
+}
+</script>
 
 </body>
-
 </html>

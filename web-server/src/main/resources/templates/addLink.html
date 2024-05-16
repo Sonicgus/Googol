@@ -2,11 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Link</title>
+    <link rel="stylesheet" th:href="@{/templates/global.css}">
 </head>
 <body>
+<nav th:insert="~{navbar :: navbar}"></nav>
 <a href="/" th:href="@{/}">
-    <img src="img/logo.png" id="logo" alt="Googol logo">
+    <img th:src="@{/img/logo.png}" id="logo" alt="Googol logo">
 </a>
 
 <form action="#" th:action="@{/addlink}" method="get">

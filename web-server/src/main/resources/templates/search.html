@@ -6,14 +6,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" th:href="@{/templates/search.css}">
     <link rel="stylesheet" th:href="@{/templates/global.css}">
-    <title>Googol</title>
+    <title>Search</title>
 </head>
 
 <body>
 
+<nav th:insert="~{navbar :: navbar}"></nav>
+
 <div id="cenas">
     <a href="/" th:href="@{/}">
-        <img src="img/logo.png" id="logo" alt="Googol logo">
+        <img th:src="@{/img/logo.png}" id="logo" alt="Googol logo">
     </a>
 
     <form action="#" th:action="@{/search}" method="get">
@@ -42,7 +44,7 @@
         var text = pre.textContent;
         var urlRegex = /(https?:\/\/[^\s]+)/g;
         pre.innerHTML = text.replace(urlRegex, function (url) {
-            return '<a href="' + url + '">' + url + '</a>';
+            return '<a href="' + url + '" target="_blank">' + url + '</a>';
         });
     };
 </script>
