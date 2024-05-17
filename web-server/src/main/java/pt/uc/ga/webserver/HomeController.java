@@ -2,6 +2,7 @@ package pt.uc.ga.webserver;
 
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -20,6 +21,7 @@ import java.util.List;
 
 @Controller
 public class HomeController {
+    private final SimpMessagingTemplate template;
 
     private final String RMI_HOST = "localhost";
     private final int RMI_GATEWAY_PORT = 1099;
@@ -27,9 +29,11 @@ public class HomeController {
     private final WeatherService weatherService;
     private final HackerNewsService hackerNewsService;
 
-    public HomeController(WeatherService weatherService, HackerNewsService hackerNewsService) {
+
+    public HomeController(SimpMessagingTemplate template, WeatherService weatherService, HackerNewsService hackerNewsService) {
         this.weatherService = weatherService;
         this.hackerNewsService = hackerNewsService;
+        this.template = template;
     }
 
 
@@ -205,5 +209,23 @@ public class HomeController {
 
         return "weather";
     }
+
+    public void sendThread() throws InterruptedException {
+        while (true) {
+            try {
+                Registry registry = LocateRegistry.getRegistry(RMI_HOST, RMI_GATEWAY_PORT);
+                IGateway gateway = (IGateway) registry.lookup("googol");
+                String reply = gateway.getAdminPage(true);
+
+                // Enviar mensagem para os clientes WebSocket
+                this.template.convertAndSend("/topic/messages", new Message(reply));
+
+                System.out.println("Sent message: " + reply);
+            } catch (RemoteException | NotBoundException e) {
+                Thread.sleep(5000);
+            }
+        }
+    }
+
 
 }

@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin</title>
     <link rel="stylesheet" th:href="@{/templates/global.css}">
+    <script src="/webjars/jquery/jquery.min.js"></script>
+    <script src="/webjars/sockjs-client/sockjs.min.js"></script>
+    <script src="/webjars/stomp-websocket/stomp.min.js"></script>
+
 </head>
 <body>
 <nav th:insert="~{navbar :: navbar}"></nav>
@@ -14,18 +18,17 @@
 <pre id="results" th:text="${results}"></pre>
 </body>
 <script>
-
     function connect() {
-        var socket = new WebSocket("wss://" + window.location.host + "/websocket-endpoint");
+        var socket = new SockJS("/ws");
+        var stompClient = Stomp.over(socket);
 
-        socket.onopen = function (event) {
-            console.log("Conexão aberta");
-            console.log("Endpoint: " + socket.url);
-        };
-        socket.onmessage = function (event) {
-            console.log("Mensagem recebida: " + event.data);
-            document.getElementById('results').textContent = event.data;
-        };
+        stompClient.connect({}, function (frame) {
+            console.log('Connected: ' + frame);
+            stompClient.subscribe('/topic/messages', function (message) {
+                document.getElementById('results').textContent = JSON.parse(message.body).content;
+                ;
+            });
+        });
 
         socket.onclose = function (event) {
             console.log("Conexão fechada");
@@ -35,7 +38,7 @@
         };
     }
 
-    // Inicia a conexão
+    // iniciar a conexão
     connect();
 </script>
 

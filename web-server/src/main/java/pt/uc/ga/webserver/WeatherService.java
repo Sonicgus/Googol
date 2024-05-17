@@ -7,13 +7,13 @@ import org.springframework.web.client.RestTemplate;
 @Service
 public class WeatherService {
 
-    private static final String WEATHER_API_URL = "http://api.openweathermap.org/data/2.5/weather?q={city}&appid={apiKey}";
+    private static final String WEATHER_API_URL = "https://api.openweathermap.org/data/2.5/weather?q={city}&appid={apiKey}";
 
     private final RestTemplate restTemplate;
     private final String apiKey;
 
-    public WeatherService(RestTemplate restTemplate, @Value("${weather.api.key}") String apiKey) {
-        this.restTemplate = restTemplate;
+    public WeatherService(@Value("${weather.api.key}") String apiKey) {
+        this.restTemplate = new RestTemplate();
         this.apiKey = apiKey;
     }
 
@@ -34,7 +34,7 @@ public class WeatherService {
     }
 
     public WeatherResponse getWeatherByCoordinates(double lat, double lon) {
-        String url = "http://api.openweathermap.org/data/2.5/weather?lat=" + lat + "&lon=" + lon + "&appid=" + apiKey;
+        String url = "https://api.openweathermap.org/data/2.5/weather?lat=" + lat + "&lon=" + lon + "&appid=" + apiKey;
         WeatherResponse response = restTemplate.getForObject(url, WeatherResponse.class);
 
         // Convert temperatures from Kelvin to Celsius and round to integer

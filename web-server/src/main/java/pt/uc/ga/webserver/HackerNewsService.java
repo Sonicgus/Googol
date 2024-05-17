@@ -15,8 +15,8 @@ public class HackerNewsService {
 
     private final RestTemplate restTemplate;
 
-    public HackerNewsService(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
+    public HackerNewsService() {
+        this.restTemplate = new RestTemplate();
     }
 
     public List getTopnews(String q) {
@@ -24,7 +24,7 @@ public class HackerNewsService {
 
         List list_that_contains_q = new ArrayList<>();
 
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 10 && i < TopList.size(); i++) {
             String url = "https://hacker-news.firebaseio.com/v0/item/" + TopList.get(i) + ".json";
             StoryResponse item = restTemplate.getForObject(url, StoryResponse.class);
 
@@ -36,7 +36,6 @@ public class HackerNewsService {
                 doc = Jsoup.connect(response).get();
                 String text = doc.text().toLowerCase();
 
-                //verificar se o texto contem a palavra chave
                 if (text.contains(q.toLowerCase())) {
                     list_that_contains_q.add(response);
                 }
