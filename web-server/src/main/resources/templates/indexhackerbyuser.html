@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Index Hacker News by User ID</title>
+    <link rel="stylesheet" th:href="@{/templates/global.css}">
+</head>
+<body>
+<nav th:insert="~{navbar :: navbar}"></nav>
+<a href="/" th:href="@{/}">
+    <img th:src="@{/img/logo.png}" id="logo" alt="Googol logo">
+</a>
+
+<form action="#" th:action="@{/indexhackerbyuser}" method="get">
+    <input class="search_box" type="text" id="searchInput" name="id" th:value="${id}">
+    <input type="submit" value="indexar os que houver">
+</form>
+
+<div th:if="${response != null}">
+    <h1>Os seguintes urls irão ser indexados:</h1>
+    <ul>
+        <li th:each="item : ${response}" th:text="${item}"></li>
+    </ul>
+</div>
+
+
+</body>
+</html>

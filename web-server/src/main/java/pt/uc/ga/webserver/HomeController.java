@@ -179,6 +179,26 @@ public class HomeController {
         return "indexhacker";
     }
 
+    @GetMapping("/indexhackerbyuser")
+    public String indexhackerbyuser(@RequestParam(required = false) String id, Model model) {
+        if (id != null) {
+            try {
+                List response = hackerNewsService.getIdnews(id);
+                for (Object s : response) {
+                    Registry registry = LocateRegistry.getRegistry(RMI_HOST, RMI_GATEWAY_PORT);
+                    IGateway gateway = (IGateway) registry.lookup("googol");
+                    String results = gateway.addLink(s.toString());
+                    System.out.println(results);
+                }
+                model.addAttribute("response", response);
+            } catch (Exception e) {
+                model.addAttribute("errorMessage", "An error occurred while fetching the top stories.");
+            }
+        }
+
+        return "indexhackerbyuser";
+    }
+
     @GetMapping("/weather")
     public String weather(@RequestParam(required = false) String city,
                           @RequestParam(required = false) Double lat,

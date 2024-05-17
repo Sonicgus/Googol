@@ -24,7 +24,7 @@ public class HackerNewsService {
 
         List list_that_contains_q = new ArrayList<>();
 
-        for (int i = 0; i < 10 && i < TopList.size(); i++) {
+        for (int i = 0; i < 100 && i < TopList.size(); i++) {
             String url = "https://hacker-news.firebaseio.com/v0/item/" + TopList.get(i) + ".json";
             StoryResponse item = restTemplate.getForObject(url, StoryResponse.class);
 
@@ -47,4 +47,25 @@ public class HackerNewsService {
         return list_that_contains_q;
     }
 
+    public List getIdnews(String id) {
+        String url = "https://hacker-news.firebaseio.com/v0/user/" + id + ".json";
+        UserResponse userResponse = restTemplate.getForObject(url, UserResponse.class);
+
+        List submittedlist = userResponse.getSubmitted();
+
+
+        List urlList = new ArrayList<>();
+
+        for (int i = 0; i < 100 && i < submittedlist.size(); i++) {
+            url = "https://hacker-news.firebaseio.com/v0/item/" + submittedlist.get(i) + ".json";
+            StoryResponse item = restTemplate.getForObject(url, StoryResponse.class);
+
+            String response = item.getUrl();
+            System.out.println(response);
+            if (response != null)
+                urlList.add(response);
+        }
+        System.out.println(urlList);
+        return urlList;
+    }
 }
