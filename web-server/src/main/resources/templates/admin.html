@@ -9,6 +9,8 @@
     <script src="/webjars/sockjs-client/sockjs.min.js"></script>
     <script src="/webjars/stomp-websocket/stomp.min.js"></script>
 
+    <script th:src="@{/js/admin.js}"></script>
+
 </head>
 <body>
 <nav th:insert="~{navbar :: navbar}"></nav>
@@ -17,30 +19,6 @@
 </a>
 <pre id="results" th:text="${results}"></pre>
 </body>
-<script>
-    function connect() {
-        var socket = new SockJS("/ws");
-        var stompClient = Stomp.over(socket);
-
-        stompClient.connect({}, function (frame) {
-            console.log('Connected: ' + frame);
-            stompClient.subscribe('/topic/messages', function (message) {
-                document.getElementById('results').textContent = JSON.parse(message.body).content;
-                ;
-            });
-        });
-
-        socket.onclose = function (event) {
-            console.log("Conexão fechada");
-            console.log("Tentando reconectar em 10 segundos...");
-            // Tenta reconectar após 10 segundos
-            setTimeout(connect, 10000);
-        };
-    }
-
-    // iniciar a conexão
-    connect();
-</script>
 
 
 </html>
