@@ -73,44 +73,6 @@ public class StoryResponse {
         this.url = url;
     }
 
-    /**
-     * {
-     * "by": "feross",
-     * "descendants": 53,
-     * "id": 40380975,
-     * "kids": [
-     * 40382272,
-     * 40382601,
-     * 40383650,
-     * 40383354,
-     * 40382856,
-     * 40382821,
-     * 40383710,
-     * 40382662,
-     * 40383725,
-     * 40382658,
-     * 40383050,
-     * 40383443,
-     * 40383437,
-     * 40382752,
-     * 40382591,
-     * 40382917,
-     * 40382647,
-     * 40382525,
-     * 40383512,
-     * 40382957,
-     * 40383155,
-     * 40382885,
-     * 40382845,
-     * 40382570
-     * ],
-     * "score": 76,
-     * "time": 1715880741,
-     * "title": "Crypto brothers front-ran the front-runners",
-     * "type": "story",
-     * "url": "https://www.bloomberg.com/opinion/articles/2024-05-16/crypto-brothers-front-ran-the-front-runners"
-     * }
-     */
     private String by;
     private int descendants;
     private int id;
