@@ -63,16 +63,14 @@ public class HomeController {
     }
 
 
-    // List<SearchResult> or PaginatedSearchResult
     @GetMapping("/search")
     public String search(@RequestParam String q, @RequestParam(required = false) Integer page, Model model) {
         try {
             Registry registry = LocateRegistry.getRegistry(RMI_HOST, RMI_GATEWAY_PORT);
             IGateway gateway = (IGateway) registry.lookup("googol");
 
-            // If page is null, assign it a default value
             if (page == null || page < 1) {
-                page = 1; // or any other default value
+                page = 1;
             }
 
             int totalpages = 10;
@@ -81,11 +79,10 @@ public class HomeController {
             model.addAttribute("results", results);
             model.addAttribute("q", q);
             model.addAttribute("page", page);
-            model.addAttribute("totalpages", totalpages);
 
             return "search";
         } catch (RemoteException | NotBoundException | MalformedURLException e) {
-            // Handle the exception here. For example, you can log the error and return an error page.
+
             e.printStackTrace();
             model.addAttribute("errorMessage", "An error occurred while processing your request.");
             return "error";
@@ -107,7 +104,7 @@ public class HomeController {
 
             model.addAttribute("results", results);
         } catch (RemoteException | NotBoundException e) {
-            // Handle the exception here. For example, you can log the error and return an error page.
+
             e.printStackTrace();
             model.addAttribute("errorMessage", "An error occurred while processing your request.");
             return "error";
@@ -131,7 +128,7 @@ public class HomeController {
 
             model.addAttribute("results", results);
         } catch (RemoteException | NotBoundException e) {
-            // Handle the exception here. For example, you can log the error and return an error page.
+
             e.printStackTrace();
             model.addAttribute("errorMessage", "An error occurred while processing your request.");
             return "error";
@@ -152,7 +149,7 @@ public class HomeController {
 
             return "admin";
         } catch (RemoteException | NotBoundException e) {
-            // Handle the exception here. For example, you can log the error and return an error page.
+
             e.printStackTrace();
             model.addAttribute("errorMessage", "An error occurred while processing your request.");
             return "error";

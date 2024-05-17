@@ -20,14 +20,9 @@ public class WeatherService {
     public WeatherResponse getWeather(String city) {
         WeatherResponse response = restTemplate.getForObject(WEATHER_API_URL, WeatherResponse.class, city, apiKey);
 
-        // Convert temperatures from Kelvin to Celsius and round to integer
         int tempInCelsius = Math.round((float) (response.getMain().getTemp() - 273.15));
-        int minTempInCelsius = Math.round((float) (response.getMain().getTemp_min() - 273.15));
-        int maxTempInCelsius = Math.round((float) (response.getMain().getTemp_max() - 273.15));
 
         response.getMain().setTemp(tempInCelsius);
-        response.getMain().setTemp_min(minTempInCelsius);
-        response.getMain().setTemp_max(maxTempInCelsius);
 
 
         return response;
@@ -37,14 +32,9 @@ public class WeatherService {
         String url = "https://api.openweathermap.org/data/2.5/weather?lat=" + lat + "&lon=" + lon + "&appid=" + apiKey;
         WeatherResponse response = restTemplate.getForObject(url, WeatherResponse.class);
 
-        // Convert temperatures from Kelvin to Celsius and round to integer
         int tempInCelsius = Math.round((float) (response.getMain().getTemp() - 273.15));
-        int minTempInCelsius = Math.round((float) (response.getMain().getTemp_min() - 273.15));
-        int maxTempInCelsius = Math.round((float) (response.getMain().getTemp_max() - 273.15));
 
         response.getMain().setTemp(tempInCelsius);
-        response.getMain().setTemp_min(minTempInCelsius);
-        response.getMain().setTemp_max(maxTempInCelsius);
 
 
         return response;

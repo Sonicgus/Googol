@@ -4,8 +4,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" th:href="@{/templates/search.css}">
-    <link rel="stylesheet" th:href="@{/templates/global.css}">
     <title>Search</title>
 </head>
 
@@ -33,7 +31,7 @@
 <a th:if="${page > 1}" th:href="@{/search(q=${q}, page=${page - 1})}">
     <button id="prev_button">Anterior</button>
 </a>
-<a th:if="${page >= totalPages}" th:href="@{/search(q=${q}, page=${page + 1})}">
+<a th:href="@{/search(q=${q}, page=${page + 1})}">
     <button id="next_button">Próximo</button>
 </a>
 
