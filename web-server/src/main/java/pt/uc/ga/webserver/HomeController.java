@@ -51,8 +51,6 @@ public class HomeController {
             model.addAttribute("weather", weatherInfo);
 
             model.addAttribute("Temp", weatherInfo.getMain().getTemp());
-            model.addAttribute("minTemp", weatherInfo.getMain().getTemp_min());
-            model.addAttribute("maxTemp", weatherInfo.getMain().getTemp_max());
 
             model.addAttribute("humidity", weatherInfo.getMain().getHumidity());
             model.addAttribute("windSpeed", weatherInfo.getWind().getSpeed());
@@ -166,6 +164,12 @@ public class HomeController {
         if (q != null) {
             try {
                 List response = hackerNewsService.getTopnews(q);
+                for (Object s : response) {
+                    Registry registry = LocateRegistry.getRegistry(RMI_HOST, RMI_GATEWAY_PORT);
+                    IGateway gateway = (IGateway) registry.lookup("googol");
+                    String results = gateway.addLink(s.toString());
+                    System.out.println(results);
+                }
                 model.addAttribute("response", response);
             } catch (Exception e) {
                 model.addAttribute("errorMessage", "An error occurred while fetching the top stories.");
@@ -195,8 +199,6 @@ public class HomeController {
             model.addAttribute("weather", weatherInfo);
 
             model.addAttribute("Temp", weatherInfo.getMain().getTemp());
-            model.addAttribute("minTemp", weatherInfo.getMain().getTemp_min());
-            model.addAttribute("maxTemp", weatherInfo.getMain().getTemp_max());
 
             model.addAttribute("humidity", weatherInfo.getMain().getHumidity());
             model.addAttribute("windSpeed", weatherInfo.getWind().getSpeed());

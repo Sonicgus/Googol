@@ -146,6 +146,9 @@ public class Downloader {
     private String getUrlInfo() {
         StringBuilder info = new StringBuilder("type | url; url | " + this.url);
 
+        if (this.description != null)
+            info.append("; description | ").append(this.description);
+
         if (this.title != null)
             info.append("; title | ").append(this.title);
 
@@ -223,11 +226,16 @@ public class Downloader {
         this.title = removeIlegalCharacters(title);
         this.description = doc.select("meta[name=description]").attr("content");
 
+
         String text;
         try {
             text = doc.text();
         } catch (NullPointerException e) {
             return;
+        }
+
+        if (this.description == null || this.description.isEmpty()) {
+            this.description = text.substring(0, Math.min(0, 100));
         }
 
         this.wordsmap = getKeywordsSet(text);

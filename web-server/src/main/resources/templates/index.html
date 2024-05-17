@@ -29,8 +29,6 @@
     <h2>Weather Information</h2>
     <p th:text="'City: ' + ${weather.name}"></p>
     <p th:text="'Temperature: ' + ${weather.main.temp} + '°C'"></p>
-    <p th:text="'Min Temperature: ' + ${minTemp} + '°C'"></p>
-    <p th:text="'Max Temperature: ' + ${maxTemp} + '°C'"></p>
     <p th:text="'Weather: ' + ${weather.weather[0].main} + ' ' + ${weatherIcon}"></p>
     <p th:text="'Humidity: ' + ${humidity} + '%'"></p>
     <p th:text="'Wind Speed: ' + ${windSpeed} + ' km/h'"></p>

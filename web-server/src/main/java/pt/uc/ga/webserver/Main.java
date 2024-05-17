@@ -33,8 +33,6 @@ public class Main {
                 String reply = gateway.getAdminPage(true);
 
                 template.convertAndSend("/topic/messages", new Message(reply));
-
-                System.out.println("Sent message: " + reply);
             } catch (RemoteException | NotBoundException e) {
                 e.printStackTrace();
                 try {
